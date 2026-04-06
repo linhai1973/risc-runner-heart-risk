@@ -526,14 +526,14 @@
             let html = '';
             // 15岁以下
             html += `<label class="option" data-value="0"><span class="checkbox"></span><span class="option-label">15岁以下 <span class="en">Under 15 years old</span></span></label>`;
-            // 15-19岁到75-79岁
-            for (let age = 15; age <= 75; age += 5) {
+            // 16-20岁到76-80岁
+            for (let age = 16; age <= 76; age += 5) {
                 const endAge = age + 4;
                 const score = Math.min(Math.floor((age - 10) / 5) * 2, 35);
                 html += `<label class="option" data-value="${score}"><span class="checkbox"></span><span class="option-label">${age}-${endAge}岁 <span class="en">${age}-${endAge} years old</span></span></label>`;
             }
-            // 80岁以上
-            html += `<label class="option" data-value="30"><span class="checkbox"></span><span class="option-label">80岁以上 <span class="en">80+ years old</span></span></label>`;
+            // 81岁以上
+            html += `<label class="option" data-value="30"><span class="checkbox"></span><span class="option-label">81岁以上 <span class="en">81+ years old</span></span></label>`;
             container.innerHTML = html;
             container.querySelectorAll('.option').forEach(option => { option.addEventListener('click', function() { handleOptionClick('q1', this); }); });
         }
