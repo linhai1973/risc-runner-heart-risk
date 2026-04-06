@@ -511,6 +511,11 @@
                 <div class="warning-box" id="warningBox" style="display: none;"><h4>⚠️ 高危信号警示 <span class="en">High Risk Warning</span></h4><p id="warningText"></p></div>
                 <div class="recommendations"><h3>💡 个性化建议 <span class="en">Personalized Recommendations</span></h3><ul id="recommendationList"></ul></div>
                 <div class="disclaimer"><strong>重要声明：</strong>本评估报告仅供参考，不能替代专业医疗诊断。如有任何不适症状，请立即就医。<span class="en"><strong>Important Disclaimer:</strong> This assessment is for reference only and cannot replace professional medical diagnosis. If you experience any discomfort, please seek medical attention immediately.</span></div>
+                <div class="tencent-survey-box" style="background: #e8f5e9; border: 1px solid #4caf50; border-radius: 10px; padding: 15px; margin-bottom: 15px;">
+                    <h4 style="color: #2e7d32; margin-bottom: 10px; font-size: 14px;">📋 数据同步至腾讯问卷 <span class="en" style="font-size: 12px; color: #388e3c;">Sync to Tencent Survey</span></h4>
+                    <p style="font-size: 13px; color: #555; margin-bottom: 10px;">点击下方按钮，将您的评估数据同步到腾讯问卷后台，便于统一管理和统计分析。<span class="en" style="font-size: 11px; color: #777;">Click below to sync your data to Tencent Survey for centralized management.</span></p>
+                    <button onclick="syncToTencentSurvey()" style="background: #4caf50; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-size: 14px; cursor: pointer; width: 100%;">🔗 同步到腾讯问卷 <span class="en" style="font-size: 12px;">Sync to Tencent Survey</span></button>
+                </div>
                 <button class="restart-btn" onclick="restart()">重新评估 <span class="en">Restart Assessment</span></button>
             </div>
         </div>
@@ -597,6 +602,26 @@
         function showRiskLevel(score) { const riskLevel = document.getElementById('riskLevel'); if (score <= 30) { riskLevel.className = 'risk-level risk-low'; riskLevel.innerHTML = '✅ 低风险 | Low Risk'; } else if (score <= 60) { riskLevel.className = 'risk-level risk-medium'; riskLevel.innerHTML = '⚠️ 中风险 | Medium Risk'; } else { riskLevel.className = 'risk-level risk-high'; riskLevel.innerHTML = '🚨 高风险 | High Risk'; } }
         function showBreakdown(breakdown, total) { const list = document.getElementById('breakdownList'); list.innerHTML = ''; for (const [key, value] of Object.entries(breakdown)) { const displayValue = value < 0 ? `${value} (降低风险 | Risk Reduced)` : value; list.innerHTML += `<div class="breakdown-item"><span>${key}</span><span>${displayValue}</span></div>`; } list.innerHTML += `<div class="breakdown-item"><span>总分 | Total</span><span>${total}</span></div>`; }
         function generateRecommendations(score, answers) { const list = document.getElementById('recommendationList'); const recommendations = []; if (score <= 30) recommendations.push('继续保持健康的生活方式，建议每年定期体检 <span class="en">Continue healthy lifestyle, annual checkup recommended</span>'); else if (score <= 60) recommendations.push('建议进行心脏超声波或动态心电图检查 <span class="en">Echocardiogram or Holter monitor recommended</span>'); else recommendations.push('【紧急】强烈建议立即就医 <span class="en">【Urgent】Seek medical attention immediately</span>'); if (answers.q10.includes(0)) recommendations.push('建议学习中医经络急救知识 <span class="en">Learn TCM acupressure for emergency</span>'); if (answers.q11.includes(0)) recommendations.push('强烈建议学习心肺复苏术（CPR）和AED使用方法 <span class="en">Learn CPR and AED operation strongly recommended</span>'); recommendations.push('跑步时尽量结伴而行，告知亲友您的行程路线 <span class="en">Run with partners and inform family of your route</span>'); list.innerHTML = recommendations.map(rec => `<li>${rec}</li>`).join(''); }
+        function syncToTencentSurvey() {
+            // 腾讯问卷链接
+            const tencentSurveyUrl = 'https://wj.qq.com/s2/26233413/4210/';
+            
+            // 构建预填参数（需要商业版才能生效，这里仅作为示例）
+            // 由于免费版不支持预填，用户需要手动填写
+            const params = new URLSearchParams();
+            
+            // 添加自定义参数用于标识来源
+            params.append('from', 'risc_html');
+            params.append('risc_score', document.getElementById('scoreNumber').textContent);
+            params.append('risc_level', document.getElementById('riskLevel').textContent.split('|')[0].trim());
+            
+            // 打开腾讯问卷
+            const fullUrl = tencentSurveyUrl + '?' + params.toString();
+            window.open(fullUrl, '_blank');
+            
+            // 显示提示
+            alert('已打开腾讯问卷页面！\n\n由于免费版不支持自动预填答案，请在腾讯问卷中手动填写您的评估信息。\n\n您本次的RISC指数为：' + document.getElementById('scoreNumber').textContent + '分\n\nOpening Tencent Survey... Please fill in your information manually.');
+        }
         function restart() { answers = { q1: null, nationality: null, nationalityDetail: null, q2: [], q3: [], q4: null, q5: null, q6: null, q7: null, q8: null, q9: null, q10: [], q11: [] }; currentQuestion = 0; document.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected')); document.querySelectorAll('button[id^="btn-"]').forEach(btn => btn.disabled = true); document.getElementById('warningBox').style.display = 'none'; document.getElementById('foreignInput').classList.remove('show'); document.getElementById('dualInput').classList.remove('show'); document.getElementById('foreignCountry').value = ''; document.getElementById('foreignOtherText').value = ''; document.getElementById('foreignOtherText').style.display = 'none'; document.getElementById('dualCountries').value = ''; document.querySelectorAll('.question-container, .result-container').forEach(el => el.classList.remove('active')); document.getElementById('welcome').classList.add('active'); document.getElementById('progressFill').style.width = '0%'; updateParticipantDisplay(); }
     </script>
 </body>
