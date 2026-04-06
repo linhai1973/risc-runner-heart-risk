@@ -120,7 +120,7 @@
         <div class="header">
             <a href="admin-login.html" class="admin-link">📊 后台/Admin</a>
             <h1>🏃 跑者心脏风险评估 <span class="en">Runner Heart Risk Assessment</span></h1>
-            <p>RISC - Runner's Integrated Safety & Care | 创建者：林深似海 | Email: 317884269@qq.com</p>
+            <p>RISC - Runner's Integrated Safety & Care | 创建者：林深似海 Creator: Lin Shen Si Hai | Email: 317884269@qq.com</p>
             <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width: 0%"></div></div>
         </div>
         <div class="content">
@@ -633,7 +633,7 @@
             const params = new URLSearchParams();
             params.append('from', 'risc_auto');
             params.append('risc_score', score);
-            params.append('risc_level', score <= 30 ? '低风险' : (score <= 60 ? '中风险' : '高风险'));
+            params.append('risc_level', score <= 30 ? 'Low Risk' : (score <= 60 ? 'Medium Risk' : 'High Risk'));
             
             // 自动打开腾讯问卷页面
             const fullUrl = tencentSurveyUrl + '?' + params.toString();
