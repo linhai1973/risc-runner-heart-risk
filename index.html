@@ -63,8 +63,11 @@
         .info-box .en { font-size: 11px; color: #a16207; display: block; margin-top: 3px; }
         .nationality-input { margin-top: 10px; display: none; }
         .nationality-input.show { display: block; }
+        .nationality-input select { width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px; margin-top: 8px; background: white; cursor: pointer; }
+        .nationality-input select:focus { outline: none; border-color: #667eea; }
         .nationality-input input { width: 100%; padding: 10px 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px; margin-top: 8px; }
         .nationality-input input:focus { outline: none; border-color: #667eea; }
+        .nationality-input label { font-size: 14px; color: #333; }
         .nationality-input label .en { font-size: 12px; color: #888; display: block; }
         .result-container { display: none; }
         .result-container.active { display: block; animation: fadeIn 0.5s ease; }
@@ -156,12 +159,230 @@
             <div class="question-container" id="q-nationality">
                 <div class="question-title"><span class="question-number">2</span>您的国籍是？<span class="en">What is your nationality?</span></div>
                 <div class="options" id="options-nationality">
-                    <label class="option" data-value="cn" onclick="selectNationality(this, 'cn')"><span class="checkbox"></span><span class="option-label">中国 <span class="en">China</span></span></label>
+                    <label class="option" data-value="cn" onclick="selectNationality(this, 'cn')"><span class="checkbox"></span><span class="option-label">中国（大陆） <span class="en">China (Mainland)</span></span></label>
+                    <label class="option" data-value="cn-hk" onclick="selectNationality(this, 'cn-hk')"><span class="checkbox"></span><span class="option-label">中国香港 <span class="en">Hong Kong, China</span></span></label>
+                    <label class="option" data-value="cn-mo" onclick="selectNationality(this, 'cn-mo')"><span class="checkbox"></span><span class="option-label">中国澳门 <span class="en">Macao, China</span></span></label>
+                    <label class="option" data-value="cn-tw" onclick="selectNationality(this, 'cn-tw')"><span class="checkbox"></span><span class="option-label">中国台湾 <span class="en">Taiwan, China</span></span></label>
                     <label class="option" data-value="foreign" onclick="selectNationality(this, 'foreign')"><span class="checkbox"></span><span class="option-label">外籍人士 <span class="en">Foreign National</span></span></label>
-                    <label class="option" data-value="dual" onclick="selectNationality(this, 'dual')"><span class="checkbox"></span><span class="option-label">双重国籍 <span class="en">Dual Citizenship</span></span></label>
+                    <label class="option" data-value="dual" onclick="selectNationality(this, 'dual')"><span class="checkbox"></span><span class="option-label">双重国籍/其他 <span class="en">Dual Citizenship/Other</span></span></label>
                 </div>
-                <div class="nationality-input" id="foreignInput"><label>请注明国籍 | Please specify nationality:<span class="en">e.g., USA, Japan, UK</span></label><input type="text" id="foreignCountry" placeholder="如：美国、日本、英国等"></div>
-                <div class="nationality-input" id="dualInput"><label>请注明双重国籍 | Please specify dual citizenship:<span class="en">e.g., China + USA</span></label><input type="text" id="dualCountries" placeholder="如：中国+美国"></div>
+                <div class="nationality-input" id="foreignInput">
+                    <label>请选择国籍 | Please select nationality:<span class="en">Select from the dropdown below</span></label>
+                    <select id="foreignCountry" onchange="checkForeignSelect()">
+                        <option value="">-- 请选择/Please Select --</option>
+                        <optgroup label="亚洲/Asia">
+                            <option value="阿富汗">阿富汗 Afghanistan</option>
+                            <option value="阿联酋">阿联酋 United Arab Emirates</option>
+                            <option value="阿曼">阿曼 Oman</option>
+                            <option value="阿塞拜疆">阿塞拜疆 Azerbaijan</option>
+                            <option value="巴基斯坦">巴基斯坦 Pakistan</option>
+                            <option value="巴勒斯坦">巴勒斯坦 Palestine</option>
+                            <option value="巴林">巴林 Bahrain</option>
+                            <option value="不丹">不丹 Bhutan</option>
+                            <option value="朝鲜">朝鲜 North Korea</option>
+                            <option value="东帝汶">东帝汶 Timor-Leste</option>
+                            <option value="菲律宾">菲律宾 Philippines</option>
+                            <option value="哈萨克斯坦">哈萨克斯坦 Kazakhstan</option>
+                            <option value="韩国">韩国 South Korea</option>
+                            <option value="吉尔吉斯斯坦">吉尔吉斯斯坦 Kyrgyzstan</option>
+                            <option value="柬埔寨">柬埔寨 Cambodia</option>
+                            <option value="卡塔尔">卡塔尔 Qatar</option>
+                            <option value="科威特">科威特 Kuwait</option>
+                            <option value="老挝">老挝 Laos</option>
+                            <option value="黎巴嫩">黎巴嫩 Lebanon</option>
+                            <option value="马尔代夫">马尔代夫 Maldives</option>
+                            <option value="马来西亚">马来西亚 Malaysia</option>
+                            <option value="蒙古">蒙古 Mongolia</option>
+                            <option value="孟加拉国">孟加拉国 Bangladesh</option>
+                            <option value="缅甸">缅甸 Myanmar</option>
+                            <option value="尼泊尔">尼泊尔 Nepal</option>
+                            <option value="日本">日本 Japan</option>
+                            <option value="塞浦路斯">塞浦路斯 Cyprus</option>
+                            <option value="沙特阿拉伯">沙特阿拉伯 Saudi Arabia</option>
+                            <option value="斯里兰卡">斯里兰卡 Sri Lanka</option>
+                            <option value="塔吉克斯坦">塔吉克斯坦 Tajikistan</option>
+                            <option value="泰国">泰国 Thailand</option>
+                            <option value="土耳其">土耳其 Turkey</option>
+                            <option value="土库曼斯坦">土库曼斯坦 Turkmenistan</option>
+                            <option value="文莱">文莱 Brunei</option>
+                            <option value="乌兹别克斯坦">乌兹别克斯坦 Uzbekistan</option>
+                            <option value="新加坡">新加坡 Singapore</option>
+                            <option value="叙利亚">叙利亚 Syria</option>
+                            <option value="亚美尼亚">亚美尼亚 Armenia</option>
+                            <option value="也门">也门 Yemen</option>
+                            <option value="伊拉克">伊拉克 Iraq</option>
+                            <option value="伊朗">伊朗 Iran</option>
+                            <option value="以色列">以色列 Israel</option>
+                            <option value="印度">印度 India</option>
+                            <option value="印度尼西亚">印度尼西亚 Indonesia</option>
+                            <option value="约旦">约旦 Jordan</option>
+                            <option value="越南">越南 Vietnam</option>
+                        </optgroup>
+                        <optgroup label="欧洲/Europe">
+                            <option value="阿尔巴尼亚">阿尔巴尼亚 Albania</option>
+                            <option value="爱尔兰">爱尔兰 Ireland</option>
+                            <option value="爱沙尼亚">爱沙尼亚 Estonia</option>
+                            <option value="安道尔">安道尔 Andorra</option>
+                            <option value="奥地利">奥地利 Austria</option>
+                            <option value="白俄罗斯">白俄罗斯 Belarus</option>
+                            <option value="保加利亚">保加利亚 Bulgaria</option>
+                            <option value="比利时">比利时 Belgium</option>
+                            <option value="冰岛">冰岛 Iceland</option>
+                            <option value="波黑">波黑 Bosnia and Herzegovina</option>
+                            <option value="波兰">波兰 Poland</option>
+                            <option value="丹麦">丹麦 Denmark</option>
+                            <option value="德国">德国 Germany</option>
+                            <option value="俄罗斯">俄罗斯 Russia</option>
+                            <option value="法国">法国 France</option>
+                            <option value="梵蒂冈">梵蒂冈 Vatican City</option>
+                            <option value="芬兰">芬兰 Finland</option>
+                            <option value="荷兰">荷兰 Netherlands</option>
+                            <option value="黑山">黑山 Montenegro</option>
+                            <option value="捷克">捷克 Czech Republic</option>
+                            <option value="克罗地亚">克罗地亚 Croatia</option>
+                            <option value="拉脱维亚">拉脱维亚 Latvia</option>
+                            <option value="立陶宛">立陶宛 Lithuania</option>
+                            <option value="列支敦士登">列支敦士登 Liechtenstein</option>
+                            <option value="卢森堡">卢森堡 Luxembourg</option>
+                            <option value="罗马尼亚">罗马尼亚 Romania</option>
+                            <option value="马耳他">马耳他 Malta</option>
+                            <option value="北马其顿">北马其顿 North Macedonia</option>
+                            <option value="挪威">挪威 Norway</option>
+                            <option value="葡萄牙">葡萄牙 Portugal</option>
+                            <option value="瑞典">瑞典 Sweden</option>
+                            <option value="瑞士">瑞士 Switzerland</option>
+                            <option value="塞尔维亚">塞尔维亚 Serbia</option>
+                            <option value="圣马力诺">圣马力诺 San Marino</option>
+                            <option value="斯洛伐克">斯洛伐克 Slovakia</option>
+                            <option value="斯洛文尼亚">斯洛文尼亚 Slovenia</option>
+                            <option value="乌克兰">乌克兰 Ukraine</option>
+                            <option value="西班牙">西班牙 Spain</option>
+                            <option value="希腊">希腊 Greece</option>
+                            <option value="匈牙利">匈牙利 Hungary</option>
+                            <option value="意大利">意大利 Italy</option>
+                            <option value="英国">英国 United Kingdom</option>
+                        </optgroup>
+                        <optgroup label="北美洲/North America">
+                            <option value="安提瓜和巴布达">安提瓜和巴布达 Antigua and Barbuda</option>
+                            <option value="巴巴多斯">巴巴多斯 Barbados</option>
+                            <option value="巴哈马">巴哈马 Bahamas</option>
+                            <option value="巴拿马">巴拿马 Panama</option>
+                            <option value="伯利兹">伯利兹 Belize</option>
+                            <option value="多米尼加">多米尼加 Dominican Republic</option>
+                            <option value="多米尼克">多米尼克 Dominica</option>
+                            <option value="哥斯达黎加">哥斯达黎加 Costa Rica</option>
+                            <option value="格林纳达">格林纳达 Grenada</option>
+                            <option value="古巴">古巴 Cuba</option>
+                            <option value="海地">海地 Haiti</option>
+                            <option value="洪都拉斯">洪都拉斯 Honduras</option>
+                            <option value="加拿大">加拿大 Canada</option>
+                            <option value="美国">美国 United States</option>
+                            <option value="墨西哥">墨西哥 Mexico</option>
+                            <option value="尼加拉瓜">尼加拉瓜 Nicaragua</option>
+                            <option value="萨尔瓦多">萨尔瓦多 El Salvador</option>
+                            <option value="圣基茨和尼维斯">圣基茨和尼维斯 Saint Kitts and Nevis</option>
+                            <option value="圣卢西亚">圣卢西亚 Saint Lucia</option>
+                            <option value="圣文森特和格林纳丁斯">圣文森特和格林纳丁斯 Saint Vincent and the Grenadines</option>
+                            <option value="特立尼达和多巴哥">特立尼达和多巴哥 Trinidad and Tobago</option>
+                            <option value="危地马拉">危地马拉 Guatemala</option>
+                            <option value="牙买加">牙买加 Jamaica</option>
+                        </optgroup>
+                        <optgroup label="南美洲/South America">
+                            <option value="阿根廷">阿根廷 Argentina</option>
+                            <option value="巴拉圭">巴拉圭 Paraguay</option>
+                            <option value="巴西">巴西 Brazil</option>
+                            <option value="秘鲁">秘鲁 Peru</option>
+                            <option value="玻利维亚">玻利维亚 Bolivia</option>
+                            <option value="厄瓜多尔">厄瓜多尔 Ecuador</option>
+                            <option value="哥伦比亚">哥伦比亚 Colombia</option>
+                            <option value="圭亚那">圭亚那 Guyana</option>
+                            <option value="苏里南">苏里南 Suriname</option>
+                            <option value="委内瑞拉">委内瑞拉 Venezuela</option>
+                            <option value="乌拉圭">乌拉圭 Uruguay</option>
+                            <option value="智利">智利 Chile</option>
+                        </optgroup>
+                        <optgroup label="非洲/Africa">
+                            <option value="阿尔及利亚">阿尔及利亚 Algeria</option>
+                            <option value="埃及">埃及 Egypt</option>
+                            <option value="埃塞俄比亚">埃塞俄比亚 Ethiopia</option>
+                            <option value="安哥拉">安哥拉 Angola</option>
+                            <option value="贝宁">贝宁 Benin</option>
+                            <option value="博茨瓦纳">博茨瓦纳 Botswana</option>
+                            <option value="布基纳法索">布基纳法索 Burkina Faso</option>
+                            <option value="布隆迪">布隆迪 Burundi</option>
+                            <option value="赤道几内亚">赤道几内亚 Equatorial Guinea</option>
+                            <option value="多哥">多哥 Togo</option>
+                            <option value="厄立特里亚">厄立特里亚 Eritrea</option>
+                            <option value="佛得角">佛得角 Cape Verde</option>
+                            <option value="冈比亚">冈比亚 Gambia</option>
+                            <option value="刚果（布）">刚果（布）Republic of the Congo</option>
+                            <option value="刚果（金）">刚果（金）Democratic Republic of the Congo</option>
+                            <option value="吉布提">吉布提 Djibouti</option>
+                            <option value="几内亚">几内亚 Guinea</option>
+                            <option value="几内亚比绍">几内亚比绍 Guinea-Bissau</option>
+                            <option value="加纳">加纳 Ghana</option>
+                            <option value="加蓬">加蓬 Gabon</option>
+                            <option value="津巴布韦">津巴布韦 Zimbabwe</option>
+                            <option value="喀麦隆">喀麦隆 Cameroon</option>
+                            <option value="科摩罗">科摩罗 Comoros</option>
+                            <option value="科特迪瓦">科特迪瓦 Côte d'Ivoire</option>
+                            <option value="肯尼亚">肯尼亚 Kenya</option>
+                            <option value="莱索托">莱索托 Lesotho</option>
+                            <option value="利比里亚">利比里亚 Liberia</option>
+                            <option value="利比亚">利比亚 Libya</option>
+                            <option value="卢旺达">卢旺达 Rwanda</option>
+                            <option value="马达加斯加">马达加斯加 Madagascar</option>
+                            <option value="马拉维">马拉维 Malawi</option>
+                            <option value="马里">马里 Mali</option>
+                            <option value="毛里求斯">毛里求斯 Mauritius</option>
+                            <option value="毛里塔尼亚">毛里塔尼亚 Mauritania</option>
+                            <option value="摩洛哥">摩洛哥 Morocco</option>
+                            <option value="莫桑比克">莫桑比克 Mozambique</option>
+                            <option value="纳米比亚">纳米比亚 Namibia</option>
+                            <option value="南非">南非 South Africa</option>
+                            <option value="南苏丹">南苏丹 South Sudan</option>
+                            <option value="尼日尔">尼日尔 Niger</option>
+                            <option value="尼日利亚">尼日利亚 Nigeria</option>
+                            <option value="塞拉利昂">塞拉利昂 Sierra Leone</option>
+                            <option value="塞内加尔">塞内加尔 Senegal</option>
+                            <option value="塞舌尔">塞舌尔 Seychelles</option>
+                            <option value="圣多美和普林西比">圣多美和普林西比 São Tomé and Príncipe</option>
+                            <option value="斯威士兰">斯威士兰 Eswatini</option>
+                            <option value="苏丹">苏丹 Sudan</option>
+                            <option value="索马里">索马里 Somalia</option>
+                            <option value="坦桑尼亚">坦桑尼亚 Tanzania</option>
+                            <option value="突尼斯">突尼斯 Tunisia</option>
+                            <option value="乌干达">乌干达 Uganda</option>
+                            <option value="赞比亚">赞比亚 Zambia</option>
+                            <option value="乍得">乍得 Chad</option>
+                            <option value="中非">中非 Central African Republic</option>
+                        </optgroup>
+                        <optgroup label="大洋洲/Oceania">
+                            <option value="澳大利亚">澳大利亚 Australia</option>
+                            <option value="巴布亚新几内亚">巴布亚新几内亚 Papua New Guinea</option>
+                            <option value="斐济">斐济 Fiji</option>
+                            <option value="基里巴斯">基里巴斯 Kiribati</option>
+                            <option value="马绍尔群岛">马绍尔群岛 Marshall Islands</option>
+                            <option value="密克罗尼西亚">密克罗尼西亚 Micronesia</option>
+                            <option value="瑙鲁">瑙鲁 Nauru</option>
+                            <option value="新西兰">新西兰 New Zealand</option>
+                            <option value="帕劳">帕劳 Palau</option>
+                            <option value="萨摩亚">萨摩亚 Samoa</option>
+                            <option value="所罗门群岛">所罗门群岛 Solomon Islands</option>
+                            <option value="汤加">汤加 Tonga</option>
+                            <option value="图瓦卢">图瓦卢 Tuvalu</option>
+                            <option value="瓦努阿图">瓦努阿图 Vanuatu</option>
+                        </optgroup>
+                        <optgroup label="其他/Other">
+                            <option value="其他">其他（请在下方说明） Other (please specify below)</option>
+                        </optgroup>
+                    </select>
+                    <input type="text" id="foreignOtherText" placeholder="如选其他，请说明/If other, please specify" style="display:none; margin-top:8px;">
+                </div>
+                <div class="nationality-input" id="dualInput">
+                    <label>请注明双重国籍 | Please specify dual citizenship:<span class="en">e.g., China + USA</span></label>
+                    <input type="text" id="dualCountries" placeholder="如：中国+美国/China + USA">
+                </div>
                 <div class="buttons">
                     <button class="btn btn-secondary" onclick="prevQuestion()">上一题 <span class="en">Previous</span></button>
                     <button class="btn btn-primary" onclick="nextQuestion()" id="btn-nationality" disabled>下一题 <span class="en">Next</span></button>
@@ -313,10 +534,58 @@
         function getParticipantNumber() { const data = JSON.parse(localStorage.getItem('risc_assessments') || '[]'); return data.length + 1; }
         function updateParticipantDisplay() { const num = getParticipantNumber(); document.getElementById('welcomeParticipantNum').textContent = `第 ${num} 位 | No. ${num}`; document.getElementById('resultParticipantNum').textContent = `第 ${num} 位 | No. ${num}`; }
         document.addEventListener('DOMContentLoaded', function() { generateAgeGroups(); updateParticipantDisplay(); questionOrder.forEach(qId => { const container = document.getElementById('options-' + qId); if (container) { container.querySelectorAll('.option').forEach(option => { option.addEventListener('click', function() { handleOptionClick(qId, this); }); }); } }); });
-        function selectNationality(element, value) { const container = document.getElementById('options-nationality'); container.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected')); element.classList.add('selected'); answers.nationality = value; document.getElementById('foreignInput').classList.toggle('show', value === 'foreign'); document.getElementById('dualInput').classList.toggle('show', value === 'dual'); document.getElementById('btn-nationality').disabled = false; }
+        function selectNationality(element, value) {
+            const container = document.getElementById('options-nationality');
+            container.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
+            element.classList.add('selected');
+            answers.nationality = value;
+            document.getElementById('foreignInput').classList.toggle('show', value === 'foreign');
+            document.getElementById('dualInput').classList.toggle('show', value === 'dual');
+            // Reset inputs
+            document.getElementById('foreignCountry').value = '';
+            document.getElementById('foreignOtherText').value = '';
+            document.getElementById('foreignOtherText').style.display = 'none';
+            document.getElementById('dualCountries').value = '';
+            updateNationalityButton();
+        }
+        function checkForeignSelect() {
+            const select = document.getElementById('foreignCountry');
+            const otherInput = document.getElementById('foreignOtherText');
+            if (select.value === '其他') {
+                otherInput.style.display = 'block';
+            } else {
+                otherInput.style.display = 'none';
+                otherInput.value = '';
+            }
+            updateNationalityButton();
+        }
+        function updateNationalityButton() {
+            const btn = document.getElementById('btn-nationality');
+            if (!answers.nationality) {
+                btn.disabled = true;
+                return;
+            }
+            if (answers.nationality === 'foreign') {
+                const select = document.getElementById('foreignCountry');
+                if (select.value === '其他') {
+                    btn.disabled = !document.getElementById('foreignOtherText').value.trim();
+                } else {
+                    btn.disabled = !select.value;
+                }
+            } else if (answers.nationality === 'dual') {
+                btn.disabled = !document.getElementById('dualCountries').value.trim();
+            } else {
+                btn.disabled = false;
+            }
+        }
+        // Add event listeners for dual input
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('dualCountries').addEventListener('input', updateNationalityButton);
+            document.getElementById('foreignOtherText').addEventListener('input', updateNationalityButton);
+        });
         function handleOptionClick(questionId, element) { const isMultiSelect = multiSelectQuestions.includes(questionId); const value = parseInt(element.dataset.value); const isNone = element.dataset.isNone === 'true'; if (isMultiSelect) { if (isNone) { const container = document.getElementById('options-' + questionId); container.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected')); element.classList.add('selected'); answers[questionId] = [value]; } else { const container = document.getElementById('options-' + questionId); const noneOption = container.querySelector('[data-is-none="true"]'); if (noneOption) { noneOption.classList.remove('selected'); answers[questionId] = answers[questionId].filter(v => v !== 0); } element.classList.toggle('selected'); if (element.classList.contains('selected')) { if (!answers[questionId].includes(value)) answers[questionId].push(value); } else { answers[questionId] = answers[questionId].filter(v => v !== value); } if (answers[questionId].length === 0 && noneOption) { noneOption.classList.add('selected'); answers[questionId] = [0]; } } } else { const container = document.getElementById('options-' + questionId); container.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected')); element.classList.add('selected'); answers[questionId] = value; const btn = document.getElementById('btn-' + questionId); if (btn) btn.disabled = false; } }
         function startAssessment() { document.getElementById('welcome').classList.remove('active'); document.getElementById('q1').classList.add('active'); currentQuestion = 0; updateProgress(); }
-        function nextQuestion() { const currentId = questionOrder[currentQuestion]; if (currentId === 'q-nationality') { if (answers.nationality === 'foreign') answers.nationalityDetail = document.getElementById('foreignCountry').value; else if (answers.nationality === 'dual') answers.nationalityDetail = document.getElementById('dualCountries').value; } if (currentId === 'q3') { const hasSymptoms = answers.q3.length > 0 && !answers.q3.includes(0); if (!hasSymptoms) currentQuestion += 2; else currentQuestion++; } else currentQuestion++; if (currentQuestion < questionOrder.length) showQuestion(questionOrder[currentQuestion]); }
+        function nextQuestion() { const currentId = questionOrder[currentQuestion]; if (currentId === 'q-nationality') { if (answers.nationality === 'foreign') { const select = document.getElementById('foreignCountry'); if (select.value === '其他') { answers.nationalityDetail = '其他: ' + document.getElementById('foreignOtherText').value; } else { answers.nationalityDetail = select.value; } } else if (answers.nationality === 'dual') { answers.nationalityDetail = document.getElementById('dualCountries').value; } else { answers.nationalityDetail = answers.nationality; } } if (currentId === 'q3') { const hasSymptoms = answers.q3.length > 0 && !answers.q3.includes(0); if (!hasSymptoms) currentQuestion += 2; else currentQuestion++; } else currentQuestion++; if (currentQuestion < questionOrder.length) showQuestion(questionOrder[currentQuestion]); }
         function prevQuestion() { if (currentQuestion > 0) { currentQuestion--; showQuestion(questionOrder[currentQuestion]); } }
         function showQuestion(questionId) { document.querySelectorAll('.question-container').forEach(q => q.classList.remove('active')); document.getElementById(questionId).classList.add('active'); updateProgress(); }
         function updateProgress() { const progress = ((currentQuestion + 1) / questionOrder.length) * 100; document.getElementById('progressFill').style.width = progress + '%'; }
@@ -328,7 +597,7 @@
         function showRiskLevel(score) { const riskLevel = document.getElementById('riskLevel'); if (score <= 30) { riskLevel.className = 'risk-level risk-low'; riskLevel.innerHTML = '✅ 低风险 | Low Risk'; } else if (score <= 60) { riskLevel.className = 'risk-level risk-medium'; riskLevel.innerHTML = '⚠️ 中风险 | Medium Risk'; } else { riskLevel.className = 'risk-level risk-high'; riskLevel.innerHTML = '🚨 高风险 | High Risk'; } }
         function showBreakdown(breakdown, total) { const list = document.getElementById('breakdownList'); list.innerHTML = ''; for (const [key, value] of Object.entries(breakdown)) { const displayValue = value < 0 ? `${value} (降低风险 | Risk Reduced)` : value; list.innerHTML += `<div class="breakdown-item"><span>${key}</span><span>${displayValue}</span></div>`; } list.innerHTML += `<div class="breakdown-item"><span>总分 | Total</span><span>${total}</span></div>`; }
         function generateRecommendations(score, answers) { const list = document.getElementById('recommendationList'); const recommendations = []; if (score <= 30) recommendations.push('继续保持健康的生活方式，建议每年定期体检 <span class="en">Continue healthy lifestyle, annual checkup recommended</span>'); else if (score <= 60) recommendations.push('建议进行心脏超声波或动态心电图检查 <span class="en">Echocardiogram or Holter monitor recommended</span>'); else recommendations.push('【紧急】强烈建议立即就医 <span class="en">【Urgent】Seek medical attention immediately</span>'); if (answers.q10.includes(0)) recommendations.push('建议学习中医经络急救知识 <span class="en">Learn TCM acupressure for emergency</span>'); if (answers.q11.includes(0)) recommendations.push('强烈建议学习心肺复苏术（CPR）和AED使用方法 <span class="en">Learn CPR and AED operation strongly recommended</span>'); recommendations.push('跑步时尽量结伴而行，告知亲友您的行程路线 <span class="en">Run with partners and inform family of your route</span>'); list.innerHTML = recommendations.map(rec => `<li>${rec}</li>`).join(''); }
-        function restart() { answers = { q1: null, nationality: null, nationalityDetail: null, q2: [], q3: [], q4: null, q5: null, q6: null, q7: null, q8: null, q9: null, q10: [], q11: [] }; currentQuestion = 0; document.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected')); document.querySelectorAll('button[id^="btn-"]').forEach(btn => btn.disabled = true); document.getElementById('warningBox').style.display = 'none'; document.getElementById('foreignInput').classList.remove('show'); document.getElementById('dualInput').classList.remove('show'); document.querySelectorAll('.question-container, .result-container').forEach(el => el.classList.remove('active')); document.getElementById('welcome').classList.add('active'); document.getElementById('progressFill').style.width = '0%'; updateParticipantDisplay(); }
+        function restart() { answers = { q1: null, nationality: null, nationalityDetail: null, q2: [], q3: [], q4: null, q5: null, q6: null, q7: null, q8: null, q9: null, q10: [], q11: [] }; currentQuestion = 0; document.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected')); document.querySelectorAll('button[id^="btn-"]').forEach(btn => btn.disabled = true); document.getElementById('warningBox').style.display = 'none'; document.getElementById('foreignInput').classList.remove('show'); document.getElementById('dualInput').classList.remove('show'); document.getElementById('foreignCountry').value = ''; document.getElementById('foreignOtherText').value = ''; document.getElementById('foreignOtherText').style.display = 'none'; document.getElementById('dualCountries').value = ''; document.querySelectorAll('.question-container, .result-container').forEach(el => el.classList.remove('active')); document.getElementById('welcome').classList.add('active'); document.getElementById('progressFill').style.width = '0%'; updateParticipantDisplay(); }
     </script>
 </body>
 </html>
