@@ -164,12 +164,10 @@
                     <label class="option" data-value="cn-hk" onclick="selectNationality(this, 'cn-hk')"><span class="checkbox"></span><span class="option-label">中国香港 <span class="en">Hong Kong, China</span></span></label>
                     <label class="option" data-value="cn-mo" onclick="selectNationality(this, 'cn-mo')"><span class="checkbox"></span><span class="option-label">中国澳门 <span class="en">Macao, China</span></span></label>
                     <label class="option" data-value="cn-tw" onclick="selectNationality(this, 'cn-tw')"><span class="checkbox"></span><span class="option-label">中国台湾 <span class="en">Taiwan, China</span></span></label>
-                    <label class="option" data-value="foreign" onclick="selectNationality(this, 'foreign')"><span class="checkbox"></span><span class="option-label">外籍人士 <span class="en">Foreign National</span></span></label>
-                    <label class="option" data-value="dual" onclick="selectNationality(this, 'dual')"><span class="checkbox"></span><span class="option-label">双重国籍/其他 <span class="en">Dual Citizenship/Other</span></span></label>
                 </div>
-                <div class="nationality-input" id="foreignInput">
-                    <label>请选择国籍 | Please select nationality:<span class="en">Select from the dropdown below</span></label>
-                    <select id="foreignCountry" onchange="checkForeignSelect()">
+                <div class="nationality-input" style="display: block; margin-top: 15px;">
+                    <label style="font-size: 14px; color: #333; margin-bottom: 8px; display: block;">其他国家或地区 | Other Countries or Regions<span class="en" style="font-size: 12px; color: #888; display: block;">Select from the dropdown below</span></label>
+                    <select id="foreignCountry" onchange="checkForeignSelect()" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px; background: white; cursor: pointer;">
                         <option value="">-- 请选择/Please Select --</option>
                         <optgroup label="亚洲/Asia">
                             <option value="阿富汗">阿富汗 Afghanistan</option>
@@ -380,9 +378,9 @@
                     </select>
                     <input type="text" id="foreignOtherText" placeholder="如选其他，请说明/If other, please specify" style="display:none; margin-top:8px;">
                 </div>
-                <div class="nationality-input" id="dualInput">
-                    <label>请注明双重国籍 | Please specify dual citizenship:<span class="en">e.g., China + USA</span></label>
-                    <input type="text" id="dualCountries" placeholder="如：中国+美国/China + USA">
+                <div class="nationality-input" id="dualInput" style="display: block; margin-top: 15px;">
+                    <label style="font-size: 14px; color: #333; margin-bottom: 8px; display: block;">双重国籍/其他（需另外说明） <span class="en" style="font-size: 12px; color: #888;">Dual Citizenship/Other (please specify)</span></label>
+                    <input type="text" id="dualCountries" placeholder="如：中国+美国/China + USA" style="width: 100%; padding: 10px 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px;">
                 </div>
                 <div class="buttons">
                     <button class="btn btn-secondary" onclick="prevQuestion()">上一题 <span class="en">Previous</span></button>
@@ -550,9 +548,7 @@
             container.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
             element.classList.add('selected');
             answers.nationality = value;
-            document.getElementById('foreignInput').classList.toggle('show', value === 'foreign');
-            document.getElementById('dualInput').classList.toggle('show', value === 'dual');
-            // Reset inputs
+            // Clear dropdown and dual input when selecting Chinese option
             document.getElementById('foreignCountry').value = '';
             document.getElementById('foreignOtherText').value = '';
             document.getElementById('foreignOtherText').style.display = 'none';
@@ -568,35 +564,51 @@
                 otherInput.style.display = 'none';
                 otherInput.value = '';
             }
+            // Clear Chinese options and dual input when selecting from dropdown
+            if (select.value) {
+                const container = document.getElementById('options-nationality');
+                container.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
+                answers.nationality = 'foreign';
+                document.getElementById('dualCountries').value = '';
+            }
             updateNationalityButton();
         }
         function updateNationalityButton() {
             const btn = document.getElementById('btn-nationality');
-            if (!answers.nationality) {
-                btn.disabled = true;
-                return;
-            }
-            if (answers.nationality === 'foreign') {
-                const select = document.getElementById('foreignCountry');
-                if (select.value === '其他') {
-                    btn.disabled = !document.getElementById('foreignOtherText').value.trim();
-                } else {
-                    btn.disabled = !select.value;
-                }
-            } else if (answers.nationality === 'dual') {
-                btn.disabled = !document.getElementById('dualCountries').value.trim();
-            } else {
-                btn.disabled = false;
-            }
+            const select = document.getElementById('foreignCountry');
+            const dualInput = document.getElementById('dualCountries');
+            
+            // Check if any Chinese option is selected
+            const chineseSelected = answers.nationality && ['cn', 'cn-hk', 'cn-mo', 'cn-tw'].includes(answers.nationality);
+            
+            // Check if dropdown has value
+            const dropdownSelected = select.value && select.value !== '';
+            
+            // Check if dual input has value
+            const dualFilled = dualInput.value.trim() !== '';
+            
+            // Enable button if any option is selected
+            btn.disabled = !(chineseSelected || dropdownSelected || dualFilled);
         }
-        // Add event listeners for dual input
+        // Add event listeners for dropdown and dual input
         document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('dualCountries').addEventListener('input', updateNationalityButton);
+            document.getElementById('dualCountries').addEventListener('input', function() {
+                // Clear Chinese options and dropdown when filling dual input
+                if (this.value.trim()) {
+                    const container = document.getElementById('options-nationality');
+                    container.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
+                    answers.nationality = 'dual';
+                    document.getElementById('foreignCountry').value = '';
+                    document.getElementById('foreignOtherText').value = '';
+                    document.getElementById('foreignOtherText').style.display = 'none';
+                }
+                updateNationalityButton();
+            });
             document.getElementById('foreignOtherText').addEventListener('input', updateNationalityButton);
         });
         function handleOptionClick(questionId, element) { const isMultiSelect = multiSelectQuestions.includes(questionId); const value = parseInt(element.dataset.value); const isNone = element.dataset.isNone === 'true'; if (isMultiSelect) { if (isNone) { const container = document.getElementById('options-' + questionId); container.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected')); element.classList.add('selected'); answers[questionId] = [value]; } else { const container = document.getElementById('options-' + questionId); const noneOption = container.querySelector('[data-is-none="true"]'); if (noneOption) { noneOption.classList.remove('selected'); answers[questionId] = answers[questionId].filter(v => v !== 0); } element.classList.toggle('selected'); if (element.classList.contains('selected')) { if (!answers[questionId].includes(value)) answers[questionId].push(value); } else { answers[questionId] = answers[questionId].filter(v => v !== value); } if (answers[questionId].length === 0 && noneOption) { noneOption.classList.add('selected'); answers[questionId] = [0]; } } } else { const container = document.getElementById('options-' + questionId); container.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected')); element.classList.add('selected'); answers[questionId] = value; const btn = document.getElementById('btn-' + questionId); if (btn) btn.disabled = false; } }
         function startAssessment() { document.getElementById('welcome').classList.remove('active'); document.getElementById('q1').classList.add('active'); currentQuestion = 0; updateProgress(); }
-        function nextQuestion() { const currentId = questionOrder[currentQuestion]; if (currentId === 'q-nationality') { if (answers.nationality === 'foreign') { const select = document.getElementById('foreignCountry'); if (select.value === '其他') { answers.nationalityDetail = '其他: ' + document.getElementById('foreignOtherText').value; } else { answers.nationalityDetail = select.value; } } else if (answers.nationality === 'dual') { answers.nationalityDetail = document.getElementById('dualCountries').value; } else { answers.nationalityDetail = answers.nationality; } } if (currentId === 'q3') { const hasSymptoms = answers.q3.length > 0 && !answers.q3.includes(0); if (!hasSymptoms) currentQuestion += 2; else currentQuestion++; } else currentQuestion++; if (currentQuestion < questionOrder.length) showQuestion(questionOrder[currentQuestion]); }
+        function nextQuestion() { const currentId = questionOrder[currentQuestion]; if (currentId === 'q-nationality') { const select = document.getElementById('foreignCountry'); const dualInput = document.getElementById('dualCountries'); const chineseSelected = answers.nationality && ['cn', 'cn-hk', 'cn-mo', 'cn-tw'].includes(answers.nationality); if (chineseSelected) { answers.nationalityDetail = answers.nationality; } else if (select.value) { if (select.value === '其他') { answers.nationalityDetail = '其他: ' + document.getElementById('foreignOtherText').value; answers.nationality = 'foreign'; } else { answers.nationalityDetail = select.value; answers.nationality = 'foreign'; } } else if (dualInput.value.trim()) { answers.nationalityDetail = dualInput.value; answers.nationality = 'dual'; } } if (currentId === 'q3') { const hasSymptoms = answers.q3.length > 0 && !answers.q3.includes(0); if (!hasSymptoms) currentQuestion += 2; else currentQuestion++; } else currentQuestion++; if (currentQuestion < questionOrder.length) showQuestion(questionOrder[currentQuestion]); }
         function prevQuestion() { if (currentQuestion > 0) { currentQuestion--; showQuestion(questionOrder[currentQuestion]); } }
         function showQuestion(questionId) { document.querySelectorAll('.question-container').forEach(q => q.classList.remove('active')); document.getElementById(questionId).classList.add('active'); updateProgress(); }
         function updateProgress() { const progress = ((currentQuestion + 1) / questionOrder.length) * 100; document.getElementById('progressFill').style.width = progress + '%'; }
