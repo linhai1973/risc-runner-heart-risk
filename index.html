@@ -602,11 +602,8 @@
             // 腾讯问卷链接
             const tencentSurveyUrl = 'https://wj.qq.com/s2/26233413/4210/';
             
-            // 构建预填参数（需要商业版才能生效，这里仅作为示例）
-            // 由于免费版不支持预填，用户需要手动填写
+            // 构建参数
             const params = new URLSearchParams();
-            
-            // 添加自定义参数用于标识来源
             params.append('from', 'risc_html');
             params.append('risc_score', document.getElementById('scoreNumber').textContent);
             params.append('risc_level', document.getElementById('riskLevel').textContent.split('|')[0].trim());
@@ -614,9 +611,6 @@
             // 打开腾讯问卷
             const fullUrl = tencentSurveyUrl + '?' + params.toString();
             window.open(fullUrl, '_blank');
-            
-            // 显示提示
-            alert('已打开腾讯问卷页面！\n\n由于免费版不支持自动预填答案，请在腾讯问卷中手动填写您的评估信息。\n\n您本次的RISC指数为：' + document.getElementById('scoreNumber').textContent + '分\n\nOpening Tencent Survey... Please fill in your information manually.');
         }
         function autoSyncToTencentSurvey(score) {
             // 自动同步到腾讯问卷
