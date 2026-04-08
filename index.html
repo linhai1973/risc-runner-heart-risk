@@ -612,22 +612,117 @@
             const fullUrl = tencentSurveyUrl + '?' + params.toString();
             window.open(fullUrl, '_blank');
         }
+        // 国籍选项ID映射
+        const nationalityOptionMap = {
+            '阿富汗': 'o-101-da5e', '亚美尼亚': 'o-102-7cc5', '阿塞拜疆': 'o-103-e785', '孟加拉国': 'o-104-f43c',
+            '巴林': 'o-105-7276', '不丹': 'o-106-8811', '文莱': 'o-107-3952', '柬埔寨': 'o-108-2132',
+            '中国（大陆）': 'o-109-10cf', '中国香港': 'o-110-9eb7', '中国澳门': 'o-111-1428', '中国台湾': 'o-112-a22a',
+            '塞浦路斯': 'o-113-024b', '东帝汶': 'o-114-c443', '印度': 'o-115-d93f', '印度尼西亚': 'o-116-e36c',
+            '伊朗': 'o-117-f4c9', '伊拉克': 'o-118-cb35', '以色列': 'o-119-29a8', '日本': 'o-120-7f66',
+            '约旦': 'o-121-f9f5', '哈萨克斯坦': 'o-122-4999', '科威特': 'o-123-4854', '吉尔吉斯斯坦': 'o-124-5b73',
+            '老挝': 'o-125-e9ad', '黎巴嫩': 'o-126-d9ab', '马来西亚': 'o-127-7c82', '马尔代夫': 'o-128-828a',
+            '蒙古': 'o-129-6939', '缅甸': 'o-130-df13', '尼泊尔': 'o-131-5e02', '朝鲜': 'o-132-a5ec',
+            '阿曼': 'o-133-0bd5', '巴基斯坦': 'o-134-e120', '巴勒斯坦': 'o-135-ea7a', '菲律宾': 'o-136-bc27',
+            '卡塔尔': 'o-137-9490', '沙特阿拉伯': 'o-138-2814', '新加坡': 'o-139-13cd', '韩国': 'o-140-b857',
+            '斯里兰卡': 'o-141-b495', '叙利亚': 'o-142-2d80', '塔吉克斯坦': 'o-143-5b2b', '泰国': 'o-144-d44f',
+            '土耳其': 'o-145-a900', '土库曼斯坦': 'o-146-0b0a', '阿联酋': 'o-147-1016', '乌兹别克斯坦': 'o-148-2e17',
+            '越南': 'o-149-d0e6', '也门': 'o-150-363a', '阿尔巴尼亚': 'o-151-aa17', '安道尔': 'o-152-379b',
+            '奥地利': 'o-153-688f', '白俄罗斯': 'o-154-b1e3', '比利时': 'o-155-cfbe', '波黑': 'o-156-f0cd',
+            '保加利亚': 'o-157-f9bb', '克罗地亚': 'o-158-43e3', '捷克': 'o-159-b19f', '丹麦': 'o-160-1b1e',
+            '爱沙尼亚': 'o-161-435b', '芬兰': 'o-162-7c5a', '法国': 'o-163-05c9', '德国': 'o-164-8611',
+            '希腊': 'o-165-f3dd', '匈牙利': 'o-166-3535', '冰岛': 'o-167-f54c', '爱尔兰': 'o-168-3614',
+            '意大利': 'o-169-0231', '拉脱维亚': 'o-170-992d', '列支敦士登': 'o-171-f6af', '立陶宛': 'o-172-7185',
+            '卢森堡': 'o-173-bb42', '北马其顿': 'o-174-f48c', '马耳他': 'o-175-74bf', '摩尔多瓦': 'o-176-a172',
+            '黑山': 'o-177-7e04', '荷兰': 'o-178-2e31', '挪威': 'o-179-8fae', '波兰': 'o-180-17e2',
+            '葡萄牙': 'o-181-0a21', '罗马尼亚': 'o-182-9172', '俄罗斯': 'o-183-f346', '圣马力诺': 'o-184-2347',
+            '塞尔维亚': 'o-185-8f28', '斯洛伐克': 'o-186-f85f', '斯洛文尼亚': 'o-187-f2d8', '西班牙': 'o-188-7cd7',
+            '瑞典': 'o-189-fcc4', '瑞士': 'o-190-b96a', '乌克兰': 'o-191-eebe', '英国': 'o-192-6c3a',
+            '梵蒂冈': 'o-193-311f', '安提瓜和巴布达': 'o-194-f1f9', '巴哈马': 'o-195-9461', '巴巴多斯': 'o-196-3b0f',
+            '伯利兹': 'o-197-d665', '加拿大': 'o-198-013a', '哥斯达黎加': 'o-199-6c5c', '古巴': 'o-200-08cb',
+            '多米尼克': 'o-201-f407', '多米尼加': 'o-202-80b6', '萨尔瓦多': 'o-203-907c', '格林纳达': 'o-204-75cf',
+            '危地马拉': 'o-205-7f59', '海地': 'o-206-39d1', '洪都拉斯': 'o-207-eb4b', '牙买加': 'o-208-d7a9',
+            '墨西哥': 'o-209-1f0b', '尼加拉瓜': 'o-210-3640', '巴拿马': 'o-211-7cd3', '圣基茨和尼维斯': 'o-212-4815',
+            '圣卢西亚': 'o-213-ab5e', '圣文森特和格林纳丁斯': 'o-214-4cab', '特立尼达和多巴哥': 'o-215-7f04',
+            '美国': 'o-216-3f3c', '阿根廷': 'o-217-e9a4', '玻利维亚': 'o-218-adce', '巴西': 'o-219-3b9f',
+            '智利': 'o-220-9a7f', '哥伦比亚': 'o-221-8356', '厄瓜多尔': 'o-222-d946', '圭亚那': 'o-223-5fdb',
+            '巴拉圭': 'o-224-d16d', '秘鲁': 'o-225-cefc', '苏里南': 'o-226-153a', '乌拉圭': 'o-227-0928',
+            '委内瑞拉': 'o-228-6f46', '阿尔及利亚': 'o-229-5cd4', '安哥拉': 'o-230-7d84', '贝宁': 'o-231-5ac9',
+            '博茨瓦纳': 'o-232-a7d6', '布基纳法索': 'o-233-4be0', '布隆迪': 'o-234-595d', '佛得角': 'o-235-0875',
+            '喀麦隆': 'o-236-b267', '中非': 'o-237-ee48', '乍得': 'o-238-2178', '科摩罗': 'o-239-19d6',
+            '刚果（布）': 'o-240-21cb', '刚果（金）': 'o-241-7048', '科特迪瓦': 'o-242-5fdd', '吉布提': 'o-243-b355',
+            '埃及': 'o-244-1b83', '赤道几内亚': 'o-245-14c7', '厄立特里亚': 'o-246-e879', '斯威士兰': 'o-247-23dd',
+            '埃塞俄比亚': 'o-248-3ef7', '加蓬': 'o-249-67b1', '冈比亚': 'o-250-1b6f', '加纳': 'o-251-6191',
+            '几内亚': 'o-252-ca63', '几内亚比绍': 'o-253-6fa2', '肯尼亚': 'o-254-ff68', '莱索托': 'o-255-1c7c',
+            '利比里亚': 'o-256-b399', '利比亚': 'o-257-ffdf', '马达加斯加': 'o-258-cf74', '马拉维': 'o-259-488b',
+            '马里': 'o-260-0e66', '毛里塔尼亚': 'o-261-1bd2', '毛里求斯': 'o-262-e55f', '摩洛哥': 'o-263-5294',
+            '莫桑比克': 'o-264-b9ae', '纳米比亚': 'o-265-f80a', '尼日尔': 'o-266-113f', '尼日利亚': 'o-267-c3f9',
+            '卢旺达': 'o-268-7798', '圣多美和普林西比': 'o-269-b78e', '塞内加尔': 'o-270-5903', '塞舌尔': 'o-271-eade',
+            '塞拉利昂': 'o-272-eea3', '索马里': 'o-273-a5bb', '南非': 'o-274-e49d', '南苏丹': 'o-275-79e8',
+            '苏丹': 'o-276-7149', '坦桑尼亚': 'o-277-44b5', '多哥': 'o-278-5bae', '突尼斯': 'o-279-dfa2',
+            '乌干达': 'o-280-c955', '赞比亚': 'o-281-617e', '津巴布韦': 'o-282-9e24', '澳大利亚': 'o-283-c1cc',
+            '斐济': 'o-284-259e', '基里巴斯': 'o-285-6b17', '马绍尔群岛': 'o-286-b439', '密克罗尼西亚': 'o-287-a882',
+            '瑙鲁': 'o-288-d3d6', '新西兰': 'o-289-2615', '帕劳': 'o-290-c156', '巴布亚新几内亚': 'o-291-19c9',
+            '萨摩亚': 'o-292-dd0b', '所罗门群岛': 'o-293-0d1d', '汤加': 'o-294-a3ad', '图瓦卢': 'o-295-9931',
+            '瓦努阿图': 'o-296-9d6f', '双重国籍（需注明）': 'o-197-B8mS', '其他（需注明）': 'o-198-Cpyt'
+        };
+        
+        // 年龄组选项ID映射
+        const ageOptionMap = {
+            '15岁以下': 'o-101-bf85', '16-20岁': 'o-102-ead1', '21-25岁': 'o-103-4eb1', '26-30岁': 'o-104-0b1f',
+            '31-35岁': 'o-105-4872', '36-40岁': 'o-106-ae7f', '41-45岁': 'o-107-5ea7', '46-50岁': 'o-108-2ac1',
+            '51-55岁': 'o-109-77e4', '56-60岁': 'o-110-855a', '61-65岁': 'o-111-fa77', '66-70岁': 'o-112-1ca6',
+            '71-75岁': 'o-113-6731', '76-80岁': 'o-114-7e44', '81岁以上': 'o-115-497d'
+        };
+        
+        // 户外运动年限选项ID映射
+        const outdoorYearsMap = {
+            '1年以下': 'o-101-2cc3', '1-3年': 'o-103-6ea2', '3-5年': 'o-103-6ea2', '5-10年': 'o-104-a1f8',
+            '10年以上': 'o-5-8CUZ'
+        };
+        
+        // 风险等级选项ID映射
+        const riskLevelMap = {
+            '低风险': 'o-0-sUM8', '中风险': 'o-1-BLDF', '高风险': 'o-3-dkqx'
+        };
+
         function autoSyncToTencentSurvey(score) {
-            // 后台静默同步到腾讯问卷（不弹窗）
+            // 构建腾讯问卷预填URL
             const tencentSurveyUrl = 'https://wj.qq.com/s2/26233413/4210/';
-            const params = new URLSearchParams();
-            params.append('from', 'risc_auto');
-            params.append('risc_score', score);
-            params.append('risc_level', score <= 30 ? 'Low Risk' : (score <= 60 ? 'Medium Risk' : 'High Risk'));
+            const params = [];
             
-            // 使用隐藏iframe在后台静默加载，不弹出新窗口
-            const fullUrl = tencentSurveyUrl + '?' + params.toString();
-            const iframe = document.createElement('iframe');
-            iframe.style.display = 'none';
-            iframe.src = fullUrl;
-            document.body.appendChild(iframe);
-            // 5秒后移除iframe
-            setTimeout(() => iframe.remove(), 5000);
+            // 1. 国籍 (q-1-abcd)
+            const nationality = answers.nationalityDetail || '中国（大陆）';
+            const nationalityOptionId = nationalityOptionMap[nationality] || 'o-109-10cf';
+            params.push('q-1-abcd=' + nationalityOptionId);
+            
+            // 2. 年龄组 (q-2-L1bW)
+            const ageScore = answers.q1 || 0;
+            const ageLabel = getAgeLabelFromScore(ageScore);
+            const ageOptionId = ageOptionMap[ageLabel] || 'o-102-ead1';
+            params.push('q-2-L1bW=' + ageOptionId);
+            
+            // 3. 户外运动年限 (q-3-Ad2v) - 默认选择1-5年
+            params.push('q-3-Ad2v=o-103-6ea2');
+            
+            // 4. RISC总分 (q-4-MajQ) - 填空题，无法预填
+            // 5. 风险等级 (q-5-ianl)
+            const riskLevel = score <= 30 ? '低风险' : (score <= 60 ? '中风险' : '高风险');
+            const riskOptionId = riskLevelMap[riskLevel];
+            params.push('q-5-ianl=' + riskOptionId);
+            
+            // 构建完整URL并跳转
+            const fullUrl = tencentSurveyUrl + '?' + params.join('&');
+            window.open(fullUrl, '_blank');
+        }
+        
+        // 根据分数获取年龄标签
+        function getAgeLabelFromScore(score) {
+            const ageMap = {
+                0: '15岁以下', 2: '16-20岁', 4: '21-25岁', 6: '26-30岁', 8: '31-35岁',
+                10: '36-40岁', 12: '41-45岁', 14: '46-50岁', 16: '51-55岁', 18: '56-60岁',
+                20: '61-65岁', 22: '66-70岁', 24: '71-75岁', 26: '76-80岁', 30: '81岁以上'
+            };
+            return ageMap[score] || '21-25岁';
         }
         function restart() { answers = { q1: null, nationality: null, nationalityDetail: null, q2: [], q3: [], q4: null, q5: null, q6: null, q7: null, q8: null, q9: null, q10: [], q11: [] }; currentQuestion = 0; document.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected')); document.querySelectorAll('button[id^="btn-"]').forEach(btn => btn.disabled = true); document.getElementById('warningBox').style.display = 'none'; document.getElementById('foreignInput').classList.remove('show'); document.getElementById('dualInput').classList.remove('show'); document.getElementById('foreignCountry').value = ''; document.getElementById('foreignOtherText').value = ''; document.getElementById('foreignOtherText').style.display = 'none'; document.getElementById('dualCountries').value = ''; document.querySelectorAll('.question-container, .result-container').forEach(el => el.classList.remove('active')); document.getElementById('welcome').classList.add('active'); document.getElementById('progressFill').style.width = '0%'; updateParticipantDisplay(); }
     </script>
