@@ -122,6 +122,7 @@
             <h1>🏃 跑者心脏风险评估（测试版1.0）<span class="en">Runner Heart Risk Assessment (Test Version 1.0)</span></h1>
             <p>RISC - Runner's Integrated Safety & Care</p>
             <p style="font-size: 12px; margin-top: 5px;">创建者：林深似海<br>Creator: Linshensihai<br>Email: 317884269@qq.com</p>
+            <p style="font-size: 11px; margin-top: 8px; opacity: 0.85;">如访问缓慢，请使用<a href="#" id="backupLink" style="color: #fff; text-decoration: underline;">备用站点</a></p>
             <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width: 0%"></div></div>
         </div>
         <div class="content">
@@ -519,6 +520,30 @@
         </div>
     </div>
     <script>
+        // 备用站点自动检测
+        (function() {
+            const backupLink = document.getElementById('backupLink');
+            const currentHost = window.location.hostname;
+            
+            // GitHub和Gitee镜像地址
+            const mirrors = {
+                'github': 'https://linhai1973.github.io/risc-runner-heart-risk/',
+                'gitee': 'https://linshensihai.gitee.io/risc-runner-heart-risk/'  // 请替换为您的Gitee地址
+            };
+            
+            // 根据当前域名设置备用链接
+            if (currentHost.includes('github.io')) {
+                backupLink.href = mirrors.gitee;
+                backupLink.title = '切换到Gitee镜像（国内访问更快）';
+            } else if (currentHost.includes('gitee.io')) {
+                backupLink.href = mirrors.github;
+                backupLink.title = '切换到GitHub镜像';
+            } else {
+                // 本地或其他环境，默认跳转Gitee
+                backupLink.href = mirrors.gitee;
+            }
+        })();
+        
         function generateAgeGroups() {
             const container = document.getElementById('options-q1');
             let html = '';
