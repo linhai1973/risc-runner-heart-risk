@@ -285,6 +285,7 @@
                 <h2>
                     <span>评估记录 <span id="recordCount">(共0条)</span></span>
                     <div class="table-actions">
+                        <button class="export-btn" onclick="addTestData()">➕ 添加测试数据</button>
                         <button class="export-btn" onclick="exportCurrentView()">📥 导出当前视图</button>
                         <button class="clear-btn" onclick="clearAllData()">🗑️ 清空所有数据</button>
                     </div>
@@ -824,6 +825,48 @@
         function clearAllData() {
             if (!confirm('确定要清空所有数据吗？此操作不可恢复！')) return;
             localStorage.removeItem('risc_assessments');
+            init();
+        }
+
+        // 添加测试数据
+        function addTestData() {
+            if (!confirm('确定要添加10条测试数据吗？')) return;
+            
+            const testNames = ['张三', '李四', '王五', '赵六', '钱七', '孙八', '周九', '吴十', '郑一', '陈二'];
+            const riskLevels = ['low', 'medium', 'high'];
+            const nationalities = ['中国（大陆）', '中国香港', '美国', '日本', '韩国'];
+            const ageGroups = ['21-25岁', '26-30岁', '31-35岁', '36-40岁', '41-45岁'];
+            
+            let allData = JSON.parse(localStorage.getItem('risc_assessments') || '[]');
+            
+            for (let i = 0; i < 10; i++) {
+                const score = Math.floor(Math.random() * 60) + 10; // 10-70分
+                const riskLevel = score <= 30 ? 'low' : (score <= 60 ? 'medium' : 'high');
+                
+                const testData = {
+                    id: Date.now() + i,
+                    timestamp: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString(),
+                    answers: {
+                        name: testNames[i],
+                        nationality: nationalities[Math.floor(Math.random() * nationalities.length)],
+                        ageGroup: ageGroups[Math.floor(Math.random() * ageGroups.length)]
+                    },
+                    score: score,
+                    percentile: Math.floor(Math.random() * 100),
+                    breakdown: {
+                        '年龄': Math.floor(Math.random() * 10),
+                        '基础疾病': Math.floor(Math.random() * 20),
+                        '症状表现': Math.floor(Math.random() * 15),
+                        '家族史': Math.floor(Math.random() * 10),
+                        '运动习惯': Math.floor(Math.random() * 20)
+                    },
+                    riskLevel: riskLevel
+                };
+                allData.push(testData);
+            }
+            
+            localStorage.setItem('risc_assessments', JSON.stringify(allData));
+            alert('已添加10条测试数据！');
             init();
         }
 
