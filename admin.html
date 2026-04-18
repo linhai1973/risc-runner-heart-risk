@@ -220,6 +220,110 @@
             </div>
         </div>
 
+        <!-- 统计分析标签页 -->
+        <div class="tab-content" id="tab-statistics">
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <h2>年龄分布</h2>
+                    <div id="ageDistribution" style="padding: 20px 0;"></div>
+                </div>
+                <div class="chart-card">
+                    <h2>国籍分布 (Top 10)</h2>
+                    <div id="nationalityDistribution" style="padding: 20px 0;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 数据记录标签页 -->
+        <div class="tab-content" id="tab-records">
+            <div class="filter-bar">
+                <div class="filter-group">
+                    <label>风险等级</label>
+                    <select id="filterRisk" onchange="applyFilters()">
+                        <option value="">全部</option>
+                        <option value="low">低风险</option>
+                        <option value="medium">中风险</option>
+                        <option value="high">高风险</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>时间范围</label>
+                    <select id="filterTime" onchange="applyFilters()">
+                        <option value="">全部</option>
+                        <option value="today">今日</option>
+                        <option value="week">最近7天</option>
+                        <option value="month">最近30天</option>
+                    </select>
+                </div>
+                <button class="reset-btn" onclick="resetFilters()">重置</button>
+            </div>
+
+            <div class="data-table-card">
+                <h2>
+                    <span>评估记录 <span id="recordCount">(共0条)</span></span>
+                    <div class="table-actions">
+                        <button class="export-btn" onclick="addTestData()">➕ 添加测试数据</button>
+                        <button class="export-btn" onclick="exportCurrentView()">📥 导出当前视图</button>
+                        <button class="clear-btn" onclick="clearAllData()">🗑️ 清空所有数据</button>
+                    </div>
+                </h2>
+                <div id="tableContainer">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>序号</th>
+                                <th>评估时间</th>
+                                <th>年龄组</th>
+                                <th>国籍</th>
+                                <th>RISC指数</th>
+                                <th>风险等级</th>
+                                <th>百分位</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dataTableBody"></tbody>
+                    </table>
+                </div>
+                <div class="pagination" id="pagination"></div>
+            </div>
+        </div>
+
+        <!-- 数据导出标签页 -->
+        <div class="tab-content" id="tab-export">
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <h2>导出选项</h2>
+                    <div style="padding: 20px 0;">
+                        <p style="margin-bottom: 15px; color: #666; font-size: 14px;">选择导出格式和数据范围：</p>
+                        <div style="display: flex; flex-direction: column; gap: 15px;">
+                            <div>
+                                <label style="display: block; margin-bottom: 8px; font-size: 13px; color: #666;">导出格式</label>
+                                <select id="exportFormat" style="padding: 10px 14px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 13px; width: 200px;">
+                                    <option value="xlsx">Excel (.xlsx)</option>
+                                    <option value="csv">CSV (Excel兼容)</option>
+                                    <option value="json">JSON</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label style="display: block; margin-bottom: 8px; font-size: 13px; color: #666;">数据范围</label>
+                                <select id="exportRange" style="padding: 10px 14px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 13px; width: 200px;">
+                                    <option value="all">全部数据</option>
+                                    <option value="today">今日数据</option>
+                                    <option value="week">最近7天</option>
+                                    <option value="month">最近30天</option>
+                                </select>
+                            </div>
+                            <button class="export-btn" onclick="exportData()" style="width: fit-content; margin-top: 10px;">📥 开始导出</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <h2>数据摘要</h2>
+                    <div id="exportSummary" style="padding: 20px 0;"></div>
+                </div>
+            </div>
+        </div>
+
         <!-- 系统设置标签页 -->
         <div class="tab-content" id="tab-settings">
             <div class="charts-grid">
