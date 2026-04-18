@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RISC 管理后台 v2.1</title>
+    <title>RISC 管理后台 v2.2</title>
     <!-- SheetJS for Excel export -->
     <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
     <style>
@@ -143,7 +143,7 @@
     <div class="header">
         <h1>📊 RISC 管理后台</h1>
         <div class="header-links">
-            <span style="font-size: 12px; opacity: 0.7;">v2.1</span>
+            <span style="font-size: 12px; opacity: 0.7;">v2.2</span>
             <div class="user-info">
                 <span>👤</span>
                 <span id="userName">管理员</span>
@@ -392,20 +392,28 @@
 
         // 切换标签页
         function switchTab(tabId) {
-            console.log('switchTab called:', tabId);
-            try {
-                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-                document.querySelector(`.tab[onclick="switchTab('${tabId}')"]`).classList.add('active');
-                document.getElementById('tab-' + tabId).classList.add('active');
-                console.log('Tab switched to:', tabId);
-                
-                if (tabId === 'export') {
-                    updateExportSummary();
-                }
-            } catch(e) {
-                console.error('switchTab error:', e);
-                alert('切换标签页出错: ' + e.message);
+            alert('1. switchTab被调用: ' + tabId);
+            
+            // 移除所有active类
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            alert('2. 已移除tab的active类');
+            
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            alert('3. 已移除tab-content的active类');
+            
+            // 添加active类
+            var tabBtn = document.querySelector('.tab[onclick="switchTab(\'' + tabId + '\')"]');
+            alert('4. 找到按钮: ' + (tabBtn ? '是' : '否'));
+            tabBtn.classList.add('active');
+            alert('5. 已添加按钮active类');
+            
+            var tabContent = document.getElementById('tab-' + tabId);
+            alert('6. 找到内容: ' + (tabContent ? '是' : '否'));
+            tabContent.classList.add('active');
+            alert('7. 已添加内容active类');
+            
+            if (tabId === 'export') {
+                updateExportSummary();
             }
         }
 

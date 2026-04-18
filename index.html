@@ -113,6 +113,82 @@
         .restart-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(102,126,234,0.4); }
         .restart-btn .en { font-size: 13px; display: block; }
         @media (max-width: 600px) { .header h1 { font-size: 20px; } .content { padding: 20px; } .question-title { font-size: 15px; } .option { padding: 12px; font-size: 14px; } }
+        
+        /* 滑块验证样式 | Slider Verification Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+        .modal-box {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        .modal-box h3 { color: #333; margin-bottom: 10px; font-size: 18px; }
+        .modal-box p { color: #666; font-size: 14px; margin-bottom: 15px; }
+        .modal-box p .en { font-size: 12px; color: #888; display: block; margin-top: 5px; }
+        .slider-container { margin: 20px 0; }
+        .slider-track {
+            position: relative;
+            height: 45px;
+            background: linear-gradient(to right, #e8f5e9 0%, #c8e6c9 100%);
+            border-radius: 25px;
+            border: 2px solid #81c784;
+            overflow: hidden;
+        }
+        .slider-thumb {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            user-select: none;
+            transition: background 0.3s ease;
+            z-index: 10;
+        }
+        .slider-thumb:hover { background: linear-gradient(135deg, #764ba2 0%, #667eea 100%); }
+        .slider-thumb.verified {
+            background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%) !important;
+        }
+        .slider-fill {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 0;
+            background: linear-gradient(to right, #a5d6a7 0%, #81c784 100%);
+            z-index: 1;
+        }
+        .slider-text {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+            font-size: 13px;
+            z-index: 2;
+        }
+        .slider-text.verified { color: #2e7d32; }
     </style>
 </head>
 <body>
@@ -615,7 +691,6 @@
         function prevQuestion() { if (currentQuestion > 0) { currentQuestion--; showQuestion(questionOrder[currentQuestion]); } }
         function showQuestion(questionId) { document.querySelectorAll('.question-container').forEach(q => q.classList.remove('active')); document.getElementById(questionId).classList.add('active'); updateProgress(); }
         function updateProgress() { const progress = ((currentQuestion + 1) / questionOrder.length) * 100; document.getElementById('progressFill').style.width = progress + '%'; }
-        function showResult() { let totalScore = answers.q1 || 0; let scoreBreakdown = { '年龄 | Age': totalScore }; const diseaseScore = answers.q2.reduce((a, b) => a + b, 0); scoreBreakdown['基础疾病 | Medical History'] = diseaseScore; totalScore += diseaseScore; const symptomScore = answers.q3.reduce((a, b) => a + b, 0); scoreBreakdown['症状表现 | Symptoms'] = symptomScore; totalScore += symptomScore; if (answers.q3.length > 0 && !answers.q3.includes(0)) { scoreBreakdown['症状时机 | Symptom Timing'] = answers.q4 || 0; totalScore += answers.q4 || 0; } scoreBreakdown['家族史 | Family History'] = answers.q5 || 0; totalScore += answers.q5 || 0; const exerciseScore = (answers.q6 || 0) + (answers.q7 || 0) + (answers.q8 || 0) + (answers.q9 || 0); scoreBreakdown['运动习惯 | Exercise Habits'] = exerciseScore; totalScore += exerciseScore; const tcmScore = answers.q10.reduce((a, b) => a + b, 0); if (tcmScore < 0) { scoreBreakdown['中医急救 | TCM Knowledge'] = tcmScore; totalScore += tcmScore; } const westernScore = answers.q11.reduce((a, b) => a + b, 0); if (westernScore < 0) { scoreBreakdown['西医技能 | First Aid Skills'] = westernScore; totalScore += westernScore; } totalScore = Math.max(0, Math.min(totalScore, 100)); document.querySelectorAll('.question-container').forEach(q => q.classList.remove('active')); document.getElementById('result').classList.add('active'); document.getElementById('progressFill').style.width = '100%'; animateScore(totalScore); const allData = JSON.parse(localStorage.getItem('risc_assessments') || '[]'); const participantCount = allData.length + 1; let percentile = 0; if (participantCount >= 100) { percentile = calculatePercentile(totalScore); document.getElementById('percentile').textContent = percentile + '%'; document.getElementById('percentileNote').style.display = 'none'; } else { document.getElementById('percentile').textContent = '--'; document.getElementById('percentileNote').style.display = 'block'; } showRiskLevel(totalScore); showBreakdown(scoreBreakdown, totalScore); generateRecommendations(totalScore, answers); saveAssessmentData(totalScore, percentile, scoreBreakdown); syncToTencentDoc(totalScore, scoreBreakdown); }
         function saveAssessmentData(totalScore, percentile, scoreBreakdown) { const data = { id: Date.now(), timestamp: new Date().toISOString(), answers: JSON.parse(JSON.stringify(answers)), score: totalScore, percentile: percentile, breakdown: scoreBreakdown, riskLevel: totalScore <= 30 ? 'low' : (totalScore <= 60 ? 'medium' : 'high') }; let allData = JSON.parse(localStorage.getItem('risc_assessments') || '[]'); allData.push(data); localStorage.setItem('risc_assessments', JSON.stringify(allData)); }
         
         // 发送数据到腾讯文档智能表
@@ -793,6 +868,212 @@
         }
         
         function restart() { answers = { q1: null, nationality: null, nationalityDetail: null, q2: [], q3: [], q4: null, q5: null, q6: null, q7: null, q8: null, q9: null, q10: [], q11: [] }; currentQuestion = 0; document.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected')); document.querySelectorAll('button[id^="btn-"]').forEach(btn => btn.disabled = true); document.getElementById('warningBox').style.display = 'none'; document.getElementById('foreignInput').classList.remove('show'); document.getElementById('dualInput').classList.remove('show'); document.getElementById('foreignCountry').value = ''; document.getElementById('foreignOtherText').value = ''; document.getElementById('foreignOtherText').style.display = 'none'; document.getElementById('dualCountries').value = ''; document.querySelectorAll('.question-container, .result-container').forEach(el => el.classList.remove('active')); document.getElementById('welcome').classList.add('active'); document.getElementById('progressFill').style.width = '0%'; updateParticipantDisplay(); }
+        
+        // ========== 三重防刷机制 | Anti-Spam Mechanism ==========
+        
+        // 生成设备唯一ID
+        function generateDeviceId() {
+            const timestamp = Date.now().toString(36);
+            const random = Math.random().toString(36).substring(2, 15);
+            const fingerprint = navigator.userAgent.length.toString(36);
+            return `RISC_${timestamp}_${random}_${fingerprint}`;
+        }
+        
+        // 获取或创建设备ID
+        function getDeviceId() {
+            let deviceId = localStorage.getItem('risc_device_id');
+            if (!deviceId) {
+                deviceId = generateDeviceId();
+                localStorage.setItem('risc_device_id', deviceId);
+            }
+            return deviceId;
+        }
+        
+        // 检查是否可以提交
+        function checkCanSubmit() {
+            const deviceId = getDeviceId();
+            const lastSubmit = localStorage.getItem(`risc_last_submit_${deviceId}`);
+            
+            if (lastSubmit) {
+                const hoursSinceLastSubmit = (Date.now() - parseInt(lastSubmit)) / (1000 * 60 * 60);
+                if (hoursSinceLastSubmit < 24) {
+                    const hoursRemaining = Math.ceil(24 - hoursSinceLastSubmit);
+                    return {
+                        canSubmit: false,
+                        message: `您今日已完成评估，请${hoursRemaining}小时后再试 | You've completed assessment today, please try again in ${hoursRemaining} hours`
+                    };
+                }
+            }
+            return { canSubmit: true };
+        }
+        
+        // 显示滑块验证弹窗
+        function showSliderVerification(callback) {
+            const modalHtml = `
+                <div id="sliderModal" class="modal-overlay">
+                    <div class="modal-box">
+                        <h3>🔒 安全验证 | Security Verification</h3>
+                        <p>请拖动滑块到最右侧完成验证</p>
+                        <p class="en">Drag the slider to the right to verify</p>
+                        <div class="slider-container">
+                            <div class="slider-track" id="sliderTrack">
+                                <div class="slider-fill" id="sliderFill"></div>
+                                <div class="slider-text" id="sliderText">向右滑动 → | Slide right →</div>
+                                <div class="slider-thumb" id="sliderThumb">→</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+            
+            const thumb = document.getElementById('sliderThumb');
+            const track = document.getElementById('sliderTrack');
+            const fill = document.getElementById('sliderFill');
+            const text = document.getElementById('sliderText');
+            const modal = document.getElementById('sliderModal');
+            
+            let isDragging = false;
+            let startX = 0;
+            let thumbWidth = 45;
+            let trackWidth = track.offsetWidth;
+            let verified = false;
+            
+            thumb.addEventListener('mousedown', startDrag);
+            thumb.addEventListener('touchstart', startDrag);
+            
+            function startDrag(e) {
+                if (verified) return;
+                isDragging = true;
+                startX = e.type === 'mousedown' ? e.clientX : e.touches[0].clientX;
+                thumb.style.transition = 'none';
+                fill.style.transition = 'none';
+                
+                document.addEventListener('mousemove', onDrag);
+                document.addEventListener('touchmove', onDrag);
+                document.addEventListener('mouseup', endDrag);
+                document.addEventListener('touchend', endDrag);
+            }
+            
+            function onDrag(e) {
+                if (!isDragging) return;
+                e.preventDefault();
+                
+                const currentX = e.type === 'mousemove' ? e.clientX : e.touches[0].clientX;
+                let newX = currentX - startX;
+                
+                if (newX < 0) newX = 0;
+                if (newX > trackWidth - thumbWidth) newX = trackWidth - thumbWidth;
+                
+                thumb.style.left = newX + 'px';
+                fill.style.width = (newX + thumbWidth / 2) + 'px';
+                
+                // 检查是否到达终点
+                if (newX >= trackWidth - thumbWidth - 5) {
+                    verified = true;
+                    thumb.classList.add('verified');
+                    thumb.innerHTML = '✓';
+                    text.textContent = '验证通过 ✓ | Verified ✓';
+                    text.classList.add('verified');
+                    
+                    setTimeout(() => {
+                        modal.remove();
+                        callback();
+                    }, 500);
+                }
+            }
+            
+            function endDrag() {
+                isDragging = false;
+                thumb.style.transition = 'left 0.3s ease';
+                fill.style.transition = 'width 0.3s ease';
+                
+                // 如果没有验证成功，滑块回弹
+                if (!verified) {
+                    thumb.style.left = '0';
+                    fill.style.width = '0';
+                }
+                
+                document.removeEventListener('mousemove', onDrag);
+                document.removeEventListener('touchmove', onDrag);
+                document.removeEventListener('mouseup', endDrag);
+                document.removeEventListener('touchend', endDrag);
+            }
+        }
+        
+        // 修改后的showResult函数（防刷版）
+        function showResultWithVerification() {
+            // 第一层：检查设备ID + 时间限制
+            const check = checkCanSubmit();
+            if (!check.canSubmit) {
+                alert(check.message);
+                return;
+            }
+            
+            // 第二层：滑块验证
+            showSliderVerification(() => {
+                // 验证通过，执行原有逻辑
+                const deviceId = getDeviceId();
+                localStorage.setItem(`risc_last_submit_${deviceId}`, Date.now().toString());
+                showResultOriginal();
+            });
+        }
+        
+        // 保留原有的showResult逻辑
+        function showResultOriginal() {
+            let totalScore = answers.q1 || 0;
+            let scoreBreakdown = { '年龄 | Age': totalScore };
+            const diseaseScore = answers.q2.reduce((a, b) => a + b, 0);
+            scoreBreakdown['基础疾病 | Medical History'] = diseaseScore;
+            totalScore += diseaseScore;
+            const symptomScore = answers.q3.reduce((a, b) => a + b, 0);
+            scoreBreakdown['症状表现 | Symptoms'] = symptomScore;
+            totalScore += symptomScore;
+            if (answers.q3.length > 0 && !answers.q3.includes(0)) {
+                scoreBreakdown['症状时机 | Symptom Timing'] = answers.q4 || 0;
+                totalScore += answers.q4 || 0;
+            }
+            scoreBreakdown['家族史 | Family History'] = answers.q5 || 0;
+            totalScore += answers.q5 || 0;
+            const exerciseScore = (answers.q6 || 0) + (answers.q7 || 0) + (answers.q8 || 0) + (answers.q9 || 0);
+            scoreBreakdown['运动习惯 | Exercise Habits'] = exerciseScore;
+            totalScore += exerciseScore;
+            const tcmScore = answers.q10.reduce((a, b) => a + b, 0);
+            if (tcmScore < 0) {
+                scoreBreakdown['中医急救 | TCM Knowledge'] = tcmScore;
+                totalScore += tcmScore;
+            }
+            const westernScore = answers.q11.reduce((a, b) => a + b, 0);
+            if (westernScore < 0) {
+                scoreBreakdown['西医技能 | First Aid Skills'] = westernScore;
+                totalScore += westernScore;
+            }
+            totalScore = Math.max(0, Math.min(totalScore, 100));
+            document.querySelectorAll('.question-container').forEach(q => q.classList.remove('active'));
+            document.getElementById('result').classList.add('active');
+            document.getElementById('progressFill').style.width = '100%';
+            animateScore(totalScore);
+            const allData = JSON.parse(localStorage.getItem('risc_assessments') || '[]');
+            const participantCount = allData.length + 1;
+            let percentile = 0;
+            if (participantCount >= 100) {
+                percentile = calculatePercentile(totalScore);
+                document.getElementById('percentile').textContent = percentile + '%';
+                document.getElementById('percentileNote').style.display = 'none';
+            } else {
+                document.getElementById('percentile').textContent = '--';
+                document.getElementById('percentileNote').style.display = 'block';
+            }
+            showRiskLevel(totalScore);
+            showBreakdown(scoreBreakdown, totalScore);
+            generateRecommendations(totalScore, answers);
+            saveAssessmentData(totalScore, percentile, scoreBreakdown);
+            syncToTencentDoc(totalScore, scoreBreakdown);
+        }
+        
+        // 覆盖原有的showResult
+        window.showResult = showResultWithVerification;
     </script>
 </body>
 </html>
