@@ -615,8 +615,50 @@
         function prevQuestion() { if (currentQuestion > 0) { currentQuestion--; showQuestion(questionOrder[currentQuestion]); } }
         function showQuestion(questionId) { document.querySelectorAll('.question-container').forEach(q => q.classList.remove('active')); document.getElementById(questionId).classList.add('active'); updateProgress(); }
         function updateProgress() { const progress = ((currentQuestion + 1) / questionOrder.length) * 100; document.getElementById('progressFill').style.width = progress + '%'; }
-        function showResult() { let totalScore = answers.q1 || 0; let scoreBreakdown = { '年龄 | Age': totalScore }; const diseaseScore = answers.q2.reduce((a, b) => a + b, 0); scoreBreakdown['基础疾病 | Medical History'] = diseaseScore; totalScore += diseaseScore; const symptomScore = answers.q3.reduce((a, b) => a + b, 0); scoreBreakdown['症状表现 | Symptoms'] = symptomScore; totalScore += symptomScore; if (answers.q3.length > 0 && !answers.q3.includes(0)) { scoreBreakdown['症状时机 | Symptom Timing'] = answers.q4 || 0; totalScore += answers.q4 || 0; } scoreBreakdown['家族史 | Family History'] = answers.q5 || 0; totalScore += answers.q5 || 0; const exerciseScore = (answers.q6 || 0) + (answers.q7 || 0) + (answers.q8 || 0) + (answers.q9 || 0); scoreBreakdown['运动习惯 | Exercise Habits'] = exerciseScore; totalScore += exerciseScore; const tcmScore = answers.q10.reduce((a, b) => a + b, 0); if (tcmScore < 0) { scoreBreakdown['中医急救 | TCM Knowledge'] = tcmScore; totalScore += tcmScore; } const westernScore = answers.q11.reduce((a, b) => a + b, 0); if (westernScore < 0) { scoreBreakdown['西医技能 | First Aid Skills'] = westernScore; totalScore += westernScore; } totalScore = Math.max(0, Math.min(totalScore, 100)); document.querySelectorAll('.question-container').forEach(q => q.classList.remove('active')); document.getElementById('result').classList.add('active'); document.getElementById('progressFill').style.width = '100%'; animateScore(totalScore); const allData = JSON.parse(localStorage.getItem('risc_assessments') || '[]'); const participantCount = allData.length + 1; let percentile = 0; if (participantCount >= 100) { percentile = calculatePercentile(totalScore); document.getElementById('percentile').textContent = percentile + '%'; document.getElementById('percentileNote').style.display = 'none'; } else { document.getElementById('percentile').textContent = '--'; document.getElementById('percentileNote').style.display = 'block'; } showRiskLevel(totalScore); showBreakdown(scoreBreakdown, totalScore); generateRecommendations(totalScore, answers); saveAssessmentData(totalScore, percentile, scoreBreakdown); autoSyncToTencentSurvey(totalScore); }
+        function showResult() { let totalScore = answers.q1 || 0; let scoreBreakdown = { '年龄 | Age': totalScore }; const diseaseScore = answers.q2.reduce((a, b) => a + b, 0); scoreBreakdown['基础疾病 | Medical History'] = diseaseScore; totalScore += diseaseScore; const symptomScore = answers.q3.reduce((a, b) => a + b, 0); scoreBreakdown['症状表现 | Symptoms'] = symptomScore; totalScore += symptomScore; if (answers.q3.length > 0 && !answers.q3.includes(0)) { scoreBreakdown['症状时机 | Symptom Timing'] = answers.q4 || 0; totalScore += answers.q4 || 0; } scoreBreakdown['家族史 | Family History'] = answers.q5 || 0; totalScore += answers.q5 || 0; const exerciseScore = (answers.q6 || 0) + (answers.q7 || 0) + (answers.q8 || 0) + (answers.q9 || 0); scoreBreakdown['运动习惯 | Exercise Habits'] = exerciseScore; totalScore += exerciseScore; const tcmScore = answers.q10.reduce((a, b) => a + b, 0); if (tcmScore < 0) { scoreBreakdown['中医急救 | TCM Knowledge'] = tcmScore; totalScore += tcmScore; } const westernScore = answers.q11.reduce((a, b) => a + b, 0); if (westernScore < 0) { scoreBreakdown['西医技能 | First Aid Skills'] = westernScore; totalScore += westernScore; } totalScore = Math.max(0, Math.min(totalScore, 100)); document.querySelectorAll('.question-container').forEach(q => q.classList.remove('active')); document.getElementById('result').classList.add('active'); document.getElementById('progressFill').style.width = '100%'; animateScore(totalScore); const allData = JSON.parse(localStorage.getItem('risc_assessments') || '[]'); const participantCount = allData.length + 1; let percentile = 0; if (participantCount >= 100) { percentile = calculatePercentile(totalScore); document.getElementById('percentile').textContent = percentile + '%'; document.getElementById('percentileNote').style.display = 'none'; } else { document.getElementById('percentile').textContent = '--'; document.getElementById('percentileNote').style.display = 'block'; } showRiskLevel(totalScore); showBreakdown(scoreBreakdown, totalScore); generateRecommendations(totalScore, answers); saveAssessmentData(totalScore, percentile, scoreBreakdown); syncToTencentDoc(totalScore, scoreBreakdown); }
         function saveAssessmentData(totalScore, percentile, scoreBreakdown) { const data = { id: Date.now(), timestamp: new Date().toISOString(), answers: JSON.parse(JSON.stringify(answers)), score: totalScore, percentile: percentile, breakdown: scoreBreakdown, riskLevel: totalScore <= 30 ? 'low' : (totalScore <= 60 ? 'medium' : 'high') }; let allData = JSON.parse(localStorage.getItem('risc_assessments') || '[]'); allData.push(data); localStorage.setItem('risc_assessments', JSON.stringify(allData)); }
+        
+        // 发送数据到腾讯文档智能表
+        function syncToTencentDoc(totalScore, scoreBreakdown) {
+            // 腾讯文档智能表Webhook地址（需要用户自行创建后填入）
+            const TENCENT_DOC_WEBHOOK = localStorage.getItem('tencent_doc_webhook') || '';
+            
+            if (!TENCENT_DOC_WEBHOOK) {
+                console.log('未配置腾讯文档Webhook，数据仅保存在本地');
+                return;
+            }
+            
+            // 获取年龄标签
+            const ageLabel = getAgeLabelFromScore(answers.q1 || 0);
+            
+            // 获取风险等级
+            const riskLabel = totalScore <= 30 ? '低风险' : (totalScore <= 60 ? '中风险' : '高风险');
+            
+            // 构建发送数据
+            const payload = {
+                timestamp: new Date().toLocaleString('zh-CN'),
+                nationality: answers.nationalityDetail || '中国（大陆）',
+                ageGroup: ageLabel,
+                score: totalScore,
+                riskLevel: riskLabel,
+                breakdown: JSON.stringify(scoreBreakdown)
+            };
+            
+            // 发送到腾讯文档智能表
+            fetch(TENCENT_DOC_WEBHOOK, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            }).then(response => {
+                if (response.ok) {
+                    console.log('数据已同步到腾讯文档智能表');
+                }
+            }).catch(error => {
+                console.error('同步失败:', error);
+            });
+        }
         function animateScore(targetScore) { const scoreNumber = document.getElementById('scoreNumber'); const scoreCircle = document.getElementById('scoreCircle'); let current = 0; const duration = 1500, steps = 60, increment = targetScore / steps, interval = duration / steps; const timer = setInterval(() => { current += increment; if (current >= targetScore) { current = targetScore; clearInterval(timer); } scoreNumber.textContent = Math.round(current); const circumference = 2 * Math.PI * 70; scoreCircle.style.strokeDashoffset = circumference - (current / 100) * circumference; }, interval); }
         function calculatePercentile(score) { const mean = 35, stdDev = 18; const z = (score - mean) / (stdDev * Math.sqrt(2)); return Math.round(50 * (1 + erf(z))); }
         function erf(x) { const a1 = 0.254829592, a2 = -0.284496736, a3 = 1.421413741, a4 = -1.453152027, a5 = 1.061405429, p = 0.3275911; const sign = x < 0 ? -1 : 1; x = Math.abs(x); const t = 1.0 / (1.0 + p * x); const y = 1.0 - (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t * Math.exp(-x * x); return sign * y; }

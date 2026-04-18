@@ -159,6 +159,7 @@
             <button class="tab" onclick="switchTab('statistics')">📈 统计分析</button>
             <button class="tab" onclick="switchTab('records')">📋 数据记录</button>
             <button class="tab" onclick="switchTab('export')">📥 数据导出</button>
+            <button class="tab" onclick="switchTab('settings')">⚙️ 系统设置</button>
         </div>
 
         <!-- 概览标签页 -->
@@ -215,147 +216,46 @@
                     <div class="score-histogram" id="histogram"></div>
                     <div class="histogram-labels">
                         <span>0</span><span>25</span><span>50</span><span>75</span><span>100</span>
-                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- 统计分析标签页 -->
-        <div class="tab-content" id="tab-statistics">
+        <!-- 系统设置标签页 -->
+        <div class="tab-content" id="tab-settings">
             <div class="charts-grid">
                 <div class="chart-card">
-                    <h2>年龄分布</h2>
-                    <div class="distribution-list" id="ageDistribution"></div>
-                </div>
-                <div class="chart-card">
-                    <h2>国籍分布</h2>
-                    <div class="distribution-list" id="nationalityDistribution"></div>
-                </div>
-                <div class="chart-card">
-                    <h2>中医急救知识掌握情况</h2>
-                    <div class="distribution-list" id="tcmDistribution"></div>
-                </div>
-                <div class="chart-card">
-                    <h2>西医急救技能掌握情况</h2>
-                    <div class="distribution-list" id="westernDistribution"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 数据记录标签页 -->
-        <div class="tab-content" id="tab-records">
-            <div class="filter-section">
-                <div class="filter-row">
-                    <div class="filter-group">
-                        <label>风险等级</label>
-                        <select id="filterRisk">
-                            <option value="">全部</option>
-                            <option value="low">低风险</option>
-                            <option value="medium">中风险</option>
-                            <option value="high">高风险</option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <label>分数范围</label>
-                        <select id="filterScore">
-                            <option value="">全部</option>
-                            <option value="0-30">低风险 (0-30)</option>
-                            <option value="31-60">中风险 (31-60)</option>
-                            <option value="61-100">高风险 (61-100)</option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <label>开始日期</label>
-                        <input type="date" id="filterStartDate">
-                    </div>
-                    <div class="filter-group">
-                        <label>结束日期</label>
-                        <input type="date" id="filterEndDate">
-                    </div>
-                    <div class="filter-group">
-                        <label>搜索</label>
-                        <input type="text" id="filterSearch" placeholder="搜索国籍...">
-                    </div>
-                    <button class="filter-btn" onclick="applyFilters()">筛选</button>
-                    <button class="reset-btn" onclick="resetFilters()">重置</button>
-                </div>
-            </div>
-
-            <div class="data-table-card">
-                <h2>
-                    <span>评估记录 <span id="recordCount">(共0条)</span></span>
-                    <div class="table-actions">
-                        <button class="export-btn" onclick="addTestData()">➕ 添加测试数据</button>
-                        <button class="export-btn" onclick="exportCurrentView()">📥 导出当前视图</button>
-                        <button class="clear-btn" onclick="clearAllData()">🗑️ 清空所有数据</button>
-                    </div>
-                </h2>
-                <div id="tableContainer">
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>序号</th>
-                                <th>评估时间</th>
-                                <th>年龄组</th>
-                                <th>国籍</th>
-                                <th>RISC指数</th>
-                                <th>风险等级</th>
-                                <th>百分位</th>
-                                <th>操作</th>
-                            </tr>
-                        </thead>
-                        <tbody id="dataTableBody"></tbody>
-                    </table>
-                </div>
-                <div class="pagination" id="pagination"></div>
-            </div>
-        </div>
-
-        <!-- 数据导出标签页 -->
-        <div class="tab-content" id="tab-export">
-            <div class="charts-grid">
-                <div class="chart-card">
-                    <h2>导出选项</h2>
+                    <h2>🔗 腾讯文档智能表集成</h2>
                     <div style="padding: 20px 0;">
-                        <p style="margin-bottom: 15px; color: #666; font-size: 14px;">选择导出格式和数据范围：</p>
+                        <p style="margin-bottom: 15px; color: #666; font-size: 14px;">配置腾讯文档智能表Webhook，评估数据将自动同步到智能表中。</p>
                         <div style="display: flex; flex-direction: column; gap: 15px;">
                             <div>
-                                <label style="display: block; margin-bottom: 8px; font-size: 13px; color: #666;">导出格式</label>
-                                <select id="exportFormat" style="padding: 10px 14px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 13px; width: 200px;">
-                                    <option value="xlsx">Excel (.xlsx)</option>
-                                    <option value="csv">CSV (Excel兼容)</option>
-                                    <option value="json">JSON</option>
-                                </select>
+                                <label style="display: block; margin-bottom: 8px; font-size: 13px; color: #666;">Webhook地址</label>
+                                <input type="text" id="tencentDocWebhook" placeholder="请输入腾讯文档智能表Webhook地址" style="padding: 10px 14px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 13px; width: 100%; max-width: 500px;">
                             </div>
-                            <div>
-                                <label style="display: block; margin-bottom: 8px; font-size: 13px; color: #666;">数据范围</label>
-                                <select id="exportRange" style="padding: 10px 14px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 13px; width: 200px;">
-                                    <option value="all">全部数据</option>
-                                    <option value="today">今日数据</option>
-                                    <option value="week">最近7天</option>
-                                    <option value="month">最近30天</option>
-                                </select>
+                            <div style="display: flex; gap: 10px;">
+                                <button class="export-btn" onclick="saveWebhookConfig()">💾 保存配置</button>
+                                <button class="clear-btn" onclick="testWebhook()">🧪 测试连接</button>
                             </div>
-                            <button class="export-btn" onclick="exportData()" style="width: fit-content; margin-top: 10px;">📥 开始导出</button>
+                            <div id="webhookStatus" style="margin-top: 10px; font-size: 13px;"></div>
                         </div>
                     </div>
                 </div>
                 <div class="chart-card">
-                    <h2>数据摘要</h2>
-                    <div id="exportSummary" style="padding: 15px 0;"></div>
+                    <h2>📖 使用说明</h2>
+                    <div style="padding: 20px 0; font-size: 14px; color: #666; line-height: 1.8;">
+                        <p><strong>第一步：创建腾讯文档智能表</strong></p>
+                        <p>1. 打开 <a href="https://docs.qq.com" target="_blank" style="color: #667eea;">docs.qq.com</a></p>
+                        <p>2. 点击"新建" → "在线表格" → "新建空白智能表"</p>
+                        <p>3. 创建字段：评估时间、国籍、年龄组、RISC分数、风险等级</p>
+                        <p style="margin-top: 15px;"><strong>第二步：获取Webhook地址</strong></p>
+                        <p>1. 在智能表中点击"..." → "自动化"</p>
+                        <p>2. 添加"Webhook"触发器</p>
+                        <p>3. 复制Webhook地址并粘贴到上方输入框</p>
+                        <p style="margin-top: 15px;"><strong>第三步：测试连接</strong></p>
+                        <p>点击"测试连接"按钮，确认数据能正常同步</p>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <!-- 详情弹窗 -->
-    <div class="detail-modal" id="detailModal">
-        <div class="detail-content">
-            <div class="detail-header">
-                <h3>评估详情</h3>
-                <button class="close-btn" onclick="closeDetail()">&times;</button>
-            </div>
-            <div id="detailBody"></div>
         </div>
     </div>
 
@@ -1042,11 +942,63 @@
             link.click();
         }
 
+        // 保存Webhook配置
+        function saveWebhookConfig() {
+            const webhookUrl = document.getElementById('tencentDocWebhook').value.trim();
+            if (!webhookUrl) {
+                alert('请输入Webhook地址');
+                return;
+            }
+            localStorage.setItem('tencent_doc_webhook', webhookUrl);
+            document.getElementById('webhookStatus').innerHTML = '<span style="color: #10b981;">✓ 配置已保存</span>';
+        }
+
+        // 测试Webhook连接
+        function testWebhook() {
+            const webhookUrl = document.getElementById('tencentDocWebhook').value.trim();
+            if (!webhookUrl) {
+                alert('请先输入Webhook地址');
+                return;
+            }
+            
+            document.getElementById('webhookStatus').innerHTML = '<span style="color: #666;">正在测试连接...</span>';
+            
+            const testData = {
+                timestamp: new Date().toLocaleString('zh-CN'),
+                nationality: '测试数据',
+                ageGroup: '测试',
+                score: 0,
+                riskLevel: '测试',
+                breakdown: '这是一条测试数据'
+            };
+            
+            fetch(webhookUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(testData)
+            }).then(response => {
+                if (response.ok) {
+                    document.getElementById('webhookStatus').innerHTML = '<span style="color: #10b981;">✓ 连接成功！数据已发送到腾讯文档智能表</span>';
+                } else {
+                    document.getElementById('webhookStatus').innerHTML = '<span style="color: #ef4444;">✗ 连接失败，请检查Webhook地址是否正确</span>';
+                }
+            }).catch(error => {
+                document.getElementById('webhookStatus').innerHTML = '<span style="color: #ef4444;">✗ 连接失败：' + error.message + '</span>';
+            });
+        }
+
+        // 加载Webhook配置
+        function loadWebhookConfig() {
+            const webhookUrl = localStorage.getItem('tencent_doc_webhook') || '';
+            document.getElementById('tencentDocWebhook').value = webhookUrl;
+        }
+
         // 初始化
         function init() {
             if (!checkAuth()) return;
             allData = loadData();
             filteredData = [...allData];
+            loadWebhookConfig();
             
             // 概览
             updateStats(allData);
