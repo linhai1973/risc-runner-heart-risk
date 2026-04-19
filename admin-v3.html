@@ -394,11 +394,19 @@
                 });
             }
             
+            // 生成带日期的文件名
+            var now = new Date();
+            var dateStr = now.getFullYear() + 
+                          String(now.getMonth() + 1).padStart(2, '0') + 
+                          String(now.getDate()).padStart(2, '0') + '_' +
+                          String(now.getHours()).padStart(2, '0') +
+                          String(now.getMinutes()).padStart(2, '0');
+            
             if (format === 'json') {
                 var blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
                 var a = document.createElement('a');
                 a.href = URL.createObjectURL(blob);
-                a.download = 'risc_data.json';
+                a.download = 'RISC评估数据_' + dateStr + '.json';
                 a.click();
             } else if (format === 'csv') {
                 var csv = '序号,评估时间,RISC指数,风险等级\n';
@@ -408,13 +416,13 @@
                 var blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8' });
                 var a = document.createElement('a');
                 a.href = URL.createObjectURL(blob);
-                a.download = 'risc_data.csv';
+                a.download = 'RISC评估数据_' + dateStr + '.csv';
                 a.click();
             } else {
                 var ws = XLSX.utils.json_to_sheet(exportData);
                 var wb = XLSX.utils.book_new();
                 XLSX.utils.book_append_sheet(wb, ws, '数据');
-                XLSX.writeFile(wb, 'risc_data.xlsx');
+                XLSX.writeFile(wb, 'RISC评估数据_' + dateStr + '.xlsx');
             }
         }
 
@@ -450,6 +458,14 @@
             var savedWebhook = localStorage.getItem('tencent_doc_webhook') || '';
             document.getElementById('webhookUrl').value = savedWebhook;
         }
+        
+        // 监听 storage 事件，实现跨标签页数据同步
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'risc_assessments') {
+                updateOverview();
+                renderTable();
+            }
+        });
     </script>
 </body>
 </html>

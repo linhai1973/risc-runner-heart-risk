@@ -642,6 +642,8 @@
         const multiSelectQuestions = ['q2', 'q3', 'q10', 'q11'];
         function getParticipantNumber() { const data = JSON.parse(localStorage.getItem('risc_assessments') || '[]'); return data.length + 1; }
         function updateParticipantDisplay() { const num = getParticipantNumber(); document.getElementById('welcomeParticipantNum').textContent = `第 ${num} 位 | No. ${num}`; document.getElementById('resultParticipantNum').textContent = `第 ${num} 位 | No. ${num}`; }
+        // 监听 storage 事件，实现跨标签页数据同步
+        window.addEventListener('storage', function(e) { if (e.key === 'risc_assessments') { updateParticipantDisplay(); } });
         document.addEventListener('DOMContentLoaded', function() { generateAgeGroups(); updateParticipantDisplay(); questionOrder.forEach(qId => { const container = document.getElementById('options-' + qId); if (container) { container.querySelectorAll('.option').forEach(option => { option.addEventListener('click', function() { handleOptionClick(qId, this); }); }); } }); });
         function checkForeignSelect() {
             const select = document.getElementById('foreignCountry');
