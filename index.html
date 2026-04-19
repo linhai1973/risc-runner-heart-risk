@@ -1027,9 +1027,14 @@
         
         // 修改后的showResult函数（防刷版）
         function showResultWithVerification() {
+            // 防重复提交
+            if (window._resultSubmitted) return;
+            window._resultSubmitted = true;
+            
             // 第一层：检查设备ID + 时间限制
             const check = checkCanSubmit();
             if (!check.canSubmit) {
+                window._resultSubmitted = false;
                 alert(check.message);
                 return;
             }
