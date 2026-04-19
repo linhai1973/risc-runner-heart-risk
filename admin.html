@@ -38,6 +38,9 @@
         .risk-high { color: #ef4444; }
         .webhook-input { width: 100%; max-width: 500px; padding: 10px; border: 1px solid #ddd; border-radius: 6px; margin-bottom: 10px; }
     </style>
+
+    <!-- 腾讯云开发SDK -->
+    <script src="https://imgcache.qq.com/qcloud/cloudbase-js-sdk/2.1.0/cloudbase.full.min.js"></script>
 </head>
 <body>
     <div class="header">
@@ -466,6 +469,120 @@
                 renderTable();
             }
         });
-    </script>
+    
+        // ========== 腾讯云数据读取 ==========
+        var CLOUDBASE_ENV_ID = localStorage.getItem('cloudbase_env_id') || '';
+        var _cbApp = null;
+        var _cloudData = [];
+        var _cloudLoaded = false;
+
+        function initCloudBase(){
+            if(!CLOUDBASE_ENV_ID || !window.cloudbase) return;
+            _cbApp = cloudbase.init({ env: CLOUDBASE_ENV_ID });
+            _cbApp.auth().signInAnonymously().then(function(){
+                console.log('CloudBase登录成功');
+                loadCloudData();
+            }).catch(function(err){
+                console.log('CloudBase登录失败:', err);
+                loadLocalData(); // fallback to localStorage
+            });
+        }
+
+        function loadCloudData(){
+            if(!_cbApp) return;
+            var db = _cbApp.database();
+            db.collection('risc_assessments')
+                .orderBy('timestamp', 'desc')
+                .limit(5000)
+                .get()
+                .then(function(res){
+                    _cloudData = res.data.map(function(item){
+                        return item.data || item;
+                    });
+                    _cloudLoaded = true;
+                    console.log('从云端加载了', _cloudData.length, '条数据');
+                    refreshAllStats();
+                })
+                .catch(function(err){
+                    console.log('云端数据加载失败:', err);
+                    loadLocalData();
+                });
+        }
+
+        function loadLocalData(){
+            var allData = JSON.parse(localStorage.getItem('risc_assessments') || '[]');
+            _cloudData = allData;
+            _cloudLoaded = true;
+            refreshAllStats();
+        }
+
+        function getAllData(){
+            return _cloudLoaded ? _cloudData : JSON.parse(localStorage.getItem('risc_assessments') || '[]');
+        }
+
+        // Override all functions that read data to use getAllData()
+        // Also auto-init on page load
+        if(document.readyState === 'loading'){
+            document.addEventListener('DOMContentLoaded', initCloudBase);
+        } else {
+            initCloudBase();
+        }
+
+        // Override refreshStats to use cloud data
+        var _origRefreshStats = refreshStats;
+        refreshStats = function(){
+            var allData = getAllData();
+            var total = allData.length;
+            var scores = allData.map(function(d){ return d.score || 0; });
+            var avg = scores.length ? (scores.reduce(function(a,b){ return a+b; }, 0) / scores.length).toFixed(1) : 0;
+            var low = allData.filter(function(d){ return d.score <= 30; }).length;
+            var medium = allData.filter(function(d){ return d.score > 30 && d.score <= 60; }).length;
+            var high = allData.filter(function(d){ return d.score > 60; }).length;
+
+            document.getElementById('totalCount').textContent = total;
+            document.getElementById('avgScore').textContent = avg;
+            document.getElementById('lowRisk').textContent = low;
+            document.getElementById('mediumRisk').textContent = medium;
+            document.getElementById('highRisk').textContent = high;
+            if(document.getElementById('participantNumber')){
+                document.getElementById('participantNumber').textContent = total;
+            }
+        };
+
+        // Override updateRecentAssessments
+        var _origUpdateRecent = updateRecentAssessments;
+        updateRecentAssessments = function(){
+            var allData = getAllData();
+            var tbody = document.getElementById('assessmentsBody');
+            if(!tbody) return;
+            var recent = allData.slice(-20).reverse();
+            tbody.innerHTML = recent.map(function(d){
+                var date = d.timestamp ? new Date(d.timestamp).toLocaleString('zh-CN') : 'N/A';
+                var risk = d.riskLevel || 'N/A';
+                var riskColor = risk === 'low' ? '#4caf50' : (risk === 'medium' ? '#ff9800' : '#f44336');
+                return '<tr><td>' + date + '</td><td>' + (d.score || 0) + '</td><td style="color:' + riskColor + '">' + risk + '</td><td>' + (d.breakdown ? JSON.stringify(d.breakdown) : '') + '</td></tr>';
+            }).join('');
+        };
+
+        // Override updateRiskDistribution
+        var _origUpdateRisk = updateRiskDistribution;
+        updateRiskDistribution = function(){
+            var allData = getAllData();
+            var low = allData.filter(function(d){ return d.score <= 30; }).length;
+            var medium = allData.filter(function(d){ return d.score > 30 && d.score <= 60; }).length;
+            var high = allData.filter(function(d){ return d.score > 60; }).length;
+            var total = allData.length || 1;
+            var colors = ['#4caf50','#ff9800','#f44336'];
+            var labels = ['低风险','中风险','高风险'];
+            var vals = [low, medium, high];
+            var pieData = vals.map(function(v, i){
+                return '<div style="display:inline-block;text-align:center;margin:0 15px;"><div style="width:80px;height:80px;border-radius:50%;background:conic-gradient(' +
+                    colors[i] + ' 0% ' + (vals[i]/total*100).toFixed(1) + '%,#e0e0e0 ' + (vals[i]/total*100).toFixed(1) + '% 100%);"></div>' +
+                    '<div style="margin-top:5px;font-size:12px;">' + labels[i] + '<br><b>' + v + '</b></div></div>';
+            });
+            var el = document.getElementById('riskDistribution');
+            if(el) el.innerHTML = '<div style="text-align:center;">' + pieData.join('') + '</div><div style="text-align:center;margin-top:10px;font-size:13px;color:#888;">共 ' + total + ' 人参与评估</div>';
+        };
+</script>
 </body>
 </html>

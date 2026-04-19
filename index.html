@@ -705,7 +705,10 @@
         function prevQuestion() { if (currentQuestion > 0) { currentQuestion--; showQuestion(questionOrder[currentQuestion]); } }
         function showQuestion(questionId) { document.querySelectorAll('.question-container').forEach(q => q.classList.remove('active')); document.getElementById(questionId).classList.add('active'); updateProgress(); }
         function updateProgress() { const progress = ((currentQuestion + 1) / questionOrder.length) * 100; document.getElementById('progressFill').style.width = progress + '%'; }
-        function saveAssessmentData(totalScore, percentile, scoreBreakdown) { const data = { id: Date.now(), timestamp: new Date().toISOString(), answers: JSON.parse(JSON.stringify(answers)), score: totalScore, percentile: percentile, breakdown: scoreBreakdown, riskLevel: totalScore <= 30 ? 'low' : (totalScore <= 60 ? 'medium' : 'high') }; let allData = JSON.parse(localStorage.getItem('risc_assessments') || '[]'); allData.push(data); localStorage.setItem('risc_assessments', JSON.stringify(allData)); }
+        function saveAssessmentData(totalScore, percentile, scoreBreakdown) { const data = { id: Date.now(), timestamp: new Date().toISOString(), answers: JSON.parse(JSON.stringify(answers)), score: totalScore, percentile: percentile, breakdown: scoreBreakdown, riskLevel: totalScore <= 30 ? 'low' : (totalScore <= 60 ? 'medium' : 'high') }; let allData = JSON.parse(localStorage.getItem('risc_assessments') || '[]');
+                allData.push(data);
+                localStorage.setItem('risc_assessments', JSON.stringify(allData));
+                if(typeof _cloudbaseSave === 'function') _cloudbaseSave(data); allData.push(data); localStorage.setItem('risc_assessments', JSON.stringify(allData)); }
         
         // 发送数据到腾讯文档智能表
         function syncToTencentDoc(totalScore, scoreBreakdown) {
@@ -866,6 +869,47 @@
         <p>创建者：林深似海 | Creator: Linshensihai | Email: 317884269@qq.com</p>
         <p>声明：本评估报告仅供参考，不能替代专业医疗诊断。如有任何不适症状，请立即就医。</p>
     </div>
+        // ========== 腾讯云数据收集 ==========
+        (function(){
+            var CLOUDBASE_ENV_ID = localStorage.getItem('cloudbase_env_id') || '';
+            
+            function loadCloudBaseSDK(){
+                var script = document.createElement('script');
+                script.src = 'https://imgcache.qq.com/qcloud/cloudbase-js-sdk/2.1.0/cloudbase.full.min.js';
+                script.onload = function(){ initCloudBase(); };
+                script.onerror = function(){ console.log('CloudBase SDK加载失败，数据仅保存本地'); };
+                document.head.appendChild(script);
+            }
+            
+            function initCloudBase(){
+                if(!CLOUDBASE_ENV_ID || !window.cloudbase){
+                    console.log('CloudBase环境未配置，数据仅保存本地');
+                    return;
+                }
+                window._cbApp = cloudbase.init({ env: CLOUDBASE_ENV_ID });
+                window._cbApp.auth().signInAnonymously().then(function(){
+                    console.log('CloudBase匿名登录成功');
+                }).catch(function(){
+                    console.log('CloudBase匿名登录失败，数据仅保存本地');
+                });
+            }
+            
+            window._cloudbaseSave = function(data){
+                if(!window._cbApp || !window._cbApp.auth().hasLoginBefore()){
+                    return;
+                }
+                var db = window._cbApp.database();
+                db.collection('risc_assessments').add({ data: data }).then(function(res){
+                    console.log('云端数据保存成功，ID:', res.id);
+                }).catch(function(err){
+                    console.log('云端保存失败:', err);
+                });
+            };
+            
+            loadCloudBaseSDK();
+        })();
+
+
 </body>
 </html>`;
             
