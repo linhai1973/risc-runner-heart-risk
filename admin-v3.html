@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RISC 管理后台 v3.0</title>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemSystemFont, "Segoe UI", Roboto, sans-serif; background: #f5f7fa; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px 30px; display: flex; justify-content: space-between; align-items: center; }
+        .header h1 { font-size: 20px; }
+        .header-links { display: flex; gap: 15px; align-items: center; }
+        .header-links a { color: white; text-decoration: none; }
+        .logout-btn { background: rgba(255,255,255,0.2); color: white; border: none; padding: 8px 16px; border-radius: 20px; cursor: pointer; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+        .tabs { display: flex; gap: 5px; margin-bottom: 20px; background: white; padding: 10px; border-radius: 10px; }
+        .tab { padding: 12px 24px; border: none; background: transparent; border-radius: 8px; cursor: pointer; font-size: 14px; }
+        .tab:hover { background: #f0f0f0; }
+        .tab.active { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        .tab-content { display: none; background: white; border-radius: 10px; padding: 20px; min-height: 400px; }
+        .tab-content.active { display: block; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .stat-card { background: white; border-radius: 10px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .stat-card h3 { color: #666; font-size: 13px; margin-bottom: 8px; }
+        .stat-value { font-size: 28px; font-weight: bold; color: #333; }
+        .chart-card { background: white; border-radius: 10px; padding: 20px; margin-bottom: 15px; }
+        .chart-card h2 { font-size: 16px; margin-bottom: 15px; }
+        .data-table { width: 100%; border-collapse: collapse; }
+        .data-table th, .data-table td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
+        .data-table th { background: #f8f9fa; font-weight: 600; }
+        .export-btn { background: #667eea; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; margin-right: 10px; }
+        .clear-btn { background: #ef4444; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; }
+        .filter-bar { display: flex; gap: 15px; margin-bottom: 15px; }
+        .filter-bar select { padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; }
+        .risk-low { color: #10b981; }
+        .risk-medium { color: #f59e0b; }
+        .risk-high { color: #ef4444; }
+        .webhook-input { width: 100%; max-width: 500px; padding: 10px; border: 1px solid #ddd; border-radius: 6px; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🏃 RISC 管理后台 <span style="font-size: 12px; opacity: 0.7;">v3.2</span></h1>
+        <div class="header-links">
+            <a href="index.html">评估页面</a>
+            <button class="logout-btn" onclick="logout()">退出登录</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('overview')">📊 概览</button>
+            <button class="tab" onclick="switchTab('statistics')">📈 统计分析</button>
+            <button class="tab" onclick="switchTab('records')">📋 数据记录</button>
+            <button class="tab" onclick="switchTab('export')">📥 数据导出</button>
+            <button class="tab" onclick="switchTab('settings')">⚙️ 系统设置</button>
+        </div>
+
+        <!-- 概览 -->
+        <div class="tab-content active" id="tab-overview">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>总参与人数</h3>
+                    <div class="stat-value" id="totalCount">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3>平均RISC指数</h3>
+                    <div class="stat-value" id="avgScore">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3>高风险占比</h3>
+                    <div class="stat-value" id="highRiskPercent">0%</div>
+                </div>
+            </div>
+            <div class="chart-card">
+                <h2>风险等级分布</h2>
+                <div id="riskDistribution">暂无数据</div>
+            </div>
+        </div>
+
+        <!-- 统计分析 -->
+        <div class="tab-content" id="tab-statistics">
+            <div class="chart-card">
+                <h2>年龄分布</h2>
+                <div id="ageDistribution">暂无数据</div>
+            </div>
+            <div class="chart-card">
+                <h2>国籍分布</h2>
+                <div id="nationalityDistribution">暂无数据</div>
+            </div>
+        </div>
+
+        <!-- 数据记录 -->
+        <div class="tab-content" id="tab-records">
+            <div class="filter-bar">
+                <select id="filterRisk" onchange="renderTable()">
+                    <option value="">全部风险等级</option>
+                    <option value="low">低风险</option>
+                    <option value="medium">中风险</option>
+                    <option value="high">高风险</option>
+                </select>
+                <button class="export-btn" onclick="addTestData()">➕ 添加测试数据</button>
+                <button class="clear-btn" onclick="clearAllData()">🗑️ 清空数据</button>
+            </div>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>序号</th>
+                        <th>评估时间</th>
+                        <th>RISC指数</th>
+                        <th>风险等级</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
+            </table>
+        </div>
+
+        <!-- 数据导出 -->
+        <div class="tab-content" id="tab-export">
+            <div class="chart-card">
+                <h2>导出数据</h2>
+                <p style="margin-bottom: 15px; color: #666;">选择格式并导出所有评估数据</p>
+                <select id="exportFormat" style="padding: 10px; border: 1px solid #ddd; border-radius: 6px; margin-right: 10px;">
+                    <option value="xlsx">Excel (.xlsx)</option>
+                    <option value="csv">CSV</option>
+                    <option value="json">JSON</option>
+                </select>
+                <button class="export-btn" onclick="exportData()">📥 导出</button>
+            </div>
+        </div>
+
+        <!-- 系统设置 -->
+        <div class="tab-content" id="tab-settings">
+            <div class="chart-card">
+                <h2>🔗 腾讯文档智能表集成</h2>
+                <p style="margin-bottom: 15px; color: #666;">配置Webhook后，评估数据将自动同步到腾讯文档智能表</p>
+                <input type="text" id="webhookUrl" class="webhook-input" placeholder="请输入Webhook地址">
+                <br>
+                <button class="export-btn" onclick="saveWebhook()">💾 保存</button>
+                <button class="export-btn" onclick="testWebhook()">🧪 测试</button>
+                <div id="webhookStatus" style="margin-top: 10px; color: #666;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 检查登录
+        function checkAuth() {
+            var auth = JSON.parse(localStorage.getItem('risc_admin_auth') || '{}');
+            if (!auth.loggedIn) {
+                window.location.href = 'admin-login.html';
+                return false;
+            }
+            return true;
+        }
+
+        function logout() {
+            localStorage.removeItem('risc_admin_auth');
+            window.location.href = 'admin-login.html';
+        }
+
+        // 切换标签页
+        function switchTab(tabId) {
+            var tabs = document.querySelectorAll('.tab');
+            var contents = document.querySelectorAll('.tab-content');
+            
+            for (var i = 0; i < tabs.length; i++) {
+                tabs[i].classList.remove('active');
+            }
+            for (var i = 0; i < contents.length; i++) {
+                contents[i].classList.remove('active');
+            }
+            
+            for (var i = 0; i < tabs.length; i++) {
+                var onclick = tabs[i].getAttribute('onclick');
+                if (onclick && onclick.indexOf(tabId) > -1) {
+                    tabs[i].classList.add('active');
+                }
+            }
+            
+            var target = document.getElementById('tab-' + tabId);
+            if (target) {
+                target.classList.add('active');
+            }
+        }
+
+        // 加载数据
+        function loadData() {
+            return JSON.parse(localStorage.getItem('risc_assessments') || '[]');
+        }
+
+        // 更新概览
+        function updateOverview() {
+            var data = loadData();
+            document.getElementById('totalCount').textContent = data.length;
+            
+            if (data.length > 0) {
+                var sum = 0;
+                var highCount = 0;
+                for (var i = 0; i < data.length; i++) {
+                    sum += data[i].score || 0;
+                    if (data[i].riskLevel === 'high') highCount++;
+                }
+                document.getElementById('avgScore').textContent = (sum / data.length).toFixed(1);
+                document.getElementById('highRiskPercent').textContent = ((highCount / data.length) * 100).toFixed(1) + '%';
+            }
+            
+            // 更新统计分析
+            updateStatistics(data);
+        }
+
+        // 更新统计分析
+        function updateStatistics(data) {
+            // 年龄分布
+            var ageMap = {};
+            for (var i = 0; i < data.length; i++) {
+                var ageScore = data[i].answers && data[i].answers.q1;
+                var ageLabel = getAgeLabel(ageScore);
+                ageMap[ageLabel] = (ageMap[ageLabel] || 0) + 1;
+            }
+            
+            var ageHtml = '';
+            var ageSorted = Object.entries(ageMap).sort(function(a, b) { return b[1] - a[1]; });
+            for (var i = 0; i < ageSorted.length; i++) {
+                var percent = ((ageSorted[i][1] / data.length) * 100).toFixed(1);
+                ageHtml += '<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #eee;">';
+                ageHtml += '<span>' + ageSorted[i][0] + '</span>';
+                ageHtml += '<span>' + ageSorted[i][1] + '人 (' + percent + '%)</span>';
+                ageHtml += '</div>';
+            }
+            document.getElementById('ageDistribution').innerHTML = ageHtml || '暂无数据';
+            
+            // 国籍分布
+            var natMap = {};
+            for (var i = 0; i < data.length; i++) {
+                var nat = data[i].answers && (data[i].answers.nationalityDetail || data[i].answers.nationality) || '未知';
+                natMap[nat] = (natMap[nat] || 0) + 1;
+            }
+            
+            var natHtml = '';
+            var natSorted = Object.entries(natMap).sort(function(a, b) { return b[1] - a[1]; }).slice(0, 10);
+            for (var i = 0; i < natSorted.length; i++) {
+                var percent = ((natSorted[i][1] / data.length) * 100).toFixed(1);
+                natHtml += '<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #eee;">';
+                natHtml += '<span>' + natSorted[i][0] + '</span>';
+                natHtml += '<span>' + natSorted[i][1] + '人 (' + percent + '%)</span>';
+                natHtml += '</div>';
+            }
+            document.getElementById('nationalityDistribution').innerHTML = natHtml || '暂无数据';
+        }
+
+        // 获取年龄标签
+        function getAgeLabel(score) {
+            var ageMap = {
+                0: '15岁以下', 2: '16-20岁', 4: '21-25岁', 6: '26-30岁', 8: '31-35岁',
+                10: '36-40岁', 12: '41-45岁', 14: '46-50岁', 16: '51-55岁', 18: '56-60岁',
+                20: '61-65岁', 22: '66-70岁', 24: '71-75岁', 26: '76-80岁', 30: '81岁以上'
+            };
+            return ageMap[score] || '未知';
+        }
+
+        // 渲染表格
+        function renderTable() {
+            var data = loadData();
+            var filterRisk = document.getElementById('filterRisk').value;
+            var html = '';
+            var displayIndex = 0;
+            
+            for (var i = 0; i < data.length; i++) {
+                var item = data[i];
+                if (filterRisk && item.riskLevel !== filterRisk) continue;
+                
+                displayIndex++;
+                var riskText = item.riskLevel === 'low' ? '低风险' : (item.riskLevel === 'medium' ? '中风险' : '高风险');
+                var riskClass = 'risk-' + item.riskLevel;
+                
+                html += '<tr>';
+                html += '<td>' + displayIndex + '</td>';
+                html += '<td>' + new Date(item.timestamp).toLocaleString('zh-CN') + '</td>';
+                html += '<td>' + item.score + '</td>';
+                html += '<td class="' + riskClass + '">' + riskText + '</td>';
+                html += '<td><button class="export-btn" onclick="deleteRecordById(' + item.id + ')">删除</button></td>';
+                html += '</tr>';
+            }
+            
+            document.getElementById('tableBody').innerHTML = html || '<tr><td colspan="5" style="text-align:center;">暂无数据</td></tr>';
+        }
+
+        // 添加测试数据
+        function addTestData() {
+            var data = loadData();
+            var nationalities = ['中国（大陆）', '中国香港', '美国', '日本', '韩国', '英国', '德国', '澳大利亚'];
+            var ageScores = [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20];
+            
+            for (var i = 0; i < 10; i++) {
+                var score = Math.floor(Math.random() * 60) + 10;
+                var ageScore = ageScores[Math.floor(Math.random() * ageScores.length)];
+                var nationality = nationalities[Math.floor(Math.random() * nationalities.length)];
+                
+                data.push({
+                    id: Date.now() + i,
+                    timestamp: new Date().toISOString(),
+                    score: score,
+                    riskLevel: score <= 30 ? 'low' : (score <= 60 ? 'medium' : 'high'),
+                    answers: {
+                        q1: ageScore,
+                        nationality: nationality,
+                        nationalityDetail: nationality
+                    }
+                });
+            }
+            localStorage.setItem('risc_assessments', JSON.stringify(data));
+            alert('已添加10条测试数据');
+            updateOverview();
+            renderTable();
+        }
+
+        // 根据ID删除记录
+        function deleteRecordById(id) {
+            if (!confirm('确定删除这条记录？')) return;
+            var data = loadData();
+            for (var i = 0; i < data.length; i++) {
+                if (data[i].id === id) {
+                    data.splice(i, 1);
+                    break;
+                }
+            }
+            localStorage.setItem('risc_assessments', JSON.stringify(data));
+            updateOverview();
+            renderTable();
+        }
+
+        // 删除记录（旧方法，保留兼容）
+        function deleteRecord(index) {
+            if (!confirm('确定删除这条记录？')) return;
+            var data = loadData();
+            data.splice(index, 1);
+            localStorage.setItem('risc_assessments', JSON.stringify(data));
+            updateOverview();
+            renderTable();
+        }
+
+        // 清空数据
+        function clearAllData() {
+            if (confirm('确定清空所有数据？')) {
+                localStorage.removeItem('risc_assessments');
+                updateOverview();
+                renderTable();
+            }
+        }
+
+        // 导出数据
+        function exportData() {
+            var data = loadData();
+            var format = document.getElementById('exportFormat').value;
+            
+            if (data.length === 0) {
+                alert('暂无数据可导出');
+                return;
+            }
+            
+            var exportData = [];
+            for (var i = 0; i < data.length; i++) {
+                exportData.push({
+                    '序号': i + 1,
+                    '评估时间': new Date(data[i].timestamp).toLocaleString('zh-CN'),
+                    'RISC指数': data[i].score,
+                    '风险等级': data[i].riskLevel === 'low' ? '低风险' : (data[i].riskLevel === 'medium' ? '中风险' : '高风险')
+                });
+            }
+            
+            if (format === 'json') {
+                var blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+                var a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = 'risc_data.json';
+                a.click();
+            } else if (format === 'csv') {
+                var csv = '序号,评估时间,RISC指数,风险等级\n';
+                for (var i = 0; i < exportData.length; i++) {
+                    csv += exportData[i]['序号'] + ',' + exportData[i]['评估时间'] + ',' + exportData[i]['RISC指数'] + ',' + exportData[i]['风险等级'] + '\n';
+                }
+                var blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8' });
+                var a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = 'risc_data.csv';
+                a.click();
+            } else {
+                var ws = XLSX.utils.json_to_sheet(exportData);
+                var wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, '数据');
+                XLSX.writeFile(wb, 'risc_data.xlsx');
+            }
+        }
+
+        // Webhook
+        function saveWebhook() {
+            var url = document.getElementById('webhookUrl').value;
+            localStorage.setItem('tencent_doc_webhook', url);
+            document.getElementById('webhookStatus').innerHTML = '<span style="color:green">✓ 已保存</span>';
+        }
+
+        function testWebhook() {
+            var url = document.getElementById('webhookUrl').value;
+            if (!url) {
+                alert('请输入Webhook地址');
+                return;
+            }
+            document.getElementById('webhookStatus').innerHTML = '测试中...';
+            fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ test: true, time: new Date().toLocaleString('zh-CN') })
+            }).then(function(res) {
+                document.getElementById('webhookStatus').innerHTML = '<span style="color:green">✓ 连接成功</span>';
+            }).catch(function(err) {
+                document.getElementById('webhookStatus').innerHTML = '<span style="color:red">✗ 连接失败: ' + err.message + '</span>';
+            });
+        }
+
+        // 初始化
+        if (checkAuth()) {
+            updateOverview();
+            renderTable();
+            var savedWebhook = localStorage.getItem('tencent_doc_webhook') || '';
+            document.getElementById('webhookUrl').value = savedWebhook;
+        }
+    </script>
+</body>
+</html>
