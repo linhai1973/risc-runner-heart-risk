@@ -41,7 +41,7 @@
 </head>
 <body>
     <div class="header">
-        <h1>🏃 RISC 管理后台 <span style="font-size: 12px; opacity: 0.7;">v3.2</span></h1>
+        <h1>🏃 RISC 管理后台 <span style="font-size: 12px; opacity: 0.7;">v3.3</span></h1>
         <div class="header-links">
             <a href="index.html">评估页面</a>
             <button class="logout-btn" onclick="logout()">退出登录</button>
@@ -205,6 +205,29 @@
                 }
                 document.getElementById('avgScore').textContent = (sum / data.length).toFixed(1);
                 document.getElementById('highRiskPercent').textContent = ((highCount / data.length) * 100).toFixed(1) + '%';
+                
+                // 风险等级分布
+                var lowCount = 0, mediumCount = 0;
+                for (var i = 0; i < data.length; i++) {
+                    if (data[i].riskLevel === 'low') lowCount++;
+                    else if (data[i].riskLevel === 'medium') mediumCount++;
+                }
+                var riskHtml = '';
+                riskHtml += '<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #eee;">';
+                riskHtml += '<span style="color:#10b981;">✅ 低风险</span>';
+                riskHtml += '<span>' + lowCount + '人 (' + ((lowCount / data.length) * 100).toFixed(1) + '%)</span>';
+                riskHtml += '</div>';
+                riskHtml += '<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #eee;">';
+                riskHtml += '<span style="color:#f59e0b;">⚠️ 中风险</span>';
+                riskHtml += '<span>' + mediumCount + '人 (' + ((mediumCount / data.length) * 100).toFixed(1) + '%)</span>';
+                riskHtml += '</div>';
+                riskHtml += '<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #eee;">';
+                riskHtml += '<span style="color:#ef4444;">🚨 高风险</span>';
+                riskHtml += '<span>' + highCount + '人 (' + ((highCount / data.length) * 100).toFixed(1) + '%)</span>';
+                riskHtml += '</div>';
+                document.getElementById('riskDistribution').innerHTML = riskHtml;
+            } else {
+                document.getElementById('riskDistribution').innerHTML = '暂无数据';
             }
             
             // 更新统计分析
