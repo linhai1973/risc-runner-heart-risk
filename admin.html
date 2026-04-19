@@ -471,7 +471,7 @@
         });
     
         // ========== 腾讯云数据读取 ==========
-        var CLOUDBASE_ENV_ID = localStorage.getItem('cloudbase_env_id') || '';
+        var CLOUDBASE_ENV_ID = 'cloud1-3g9pwwkb851a556';
         var _cbApp = null;
         var _cloudData = [];
         var _cloudLoaded = false;
@@ -488,25 +488,66 @@
             });
         }
 
-        function loadCloudData(){
+        // 使用REST API直接查询，绕过SDK的_openid过滤
+        function loadCloudDataREST(){
+            var envId = 'cloud1-3g9pwwkb851a556';
+            var url = 'https://tcb-api.tencentcloudapi.com/internal/api/v1/apps/' + envId + '/collections/risc_assessments/records?limit=5000&orderBy=timestamp&orderByType=desc&queryType=and';
+            _cbApp.auth().getTmpToken().then(function(tmpToken){
+                var token = tmpToken.token;
+                var request = window.indexedDB ? null : null;
+                // Use fetch with anonymous auth token
+                fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token,
+                        'X-TCB-OpenID': _cbApp.auth().getCurrentUser() ? _cbApp.auth().getCurrentUser().uid : ''
+                    }
+                }).then(function(res){ return res.json(); })
+                .then(function(result){
+                    if(result.data && result.data.records){
+                        _cloudData = result.data.records.map(function(item){
+                            return item.data || item;
+                        });
+                    } else if(Array.isArray(result.data)){
+                        _cloudData = result.data.map(function(item){
+                            return item.data || item;
+                        });
+                    } else {
+                        _cloudData = [];
+                    }
+                    _cloudLoaded = true;
+                    console.log('REST API加载了', _cloudData.length, '条数据');
+                    refreshAllStats();
+                }).catch(function(err){
+                    console.log('REST API失败，尝试SDK查询:', err);
+                    loadCloudDataSDK();
+                });
+            }).catch(function(err){
+                console.log('获取token失败:', err);
+                loadLocalData();
+            });
+        }
+
+        // SDK方式查询（会过滤_openid，仅作备用）
+        function loadCloudDataSDK(){
             if(!_cbApp) return;
             var db = _cbApp.database();
-            db.collection('risc_assessments')
-                .orderBy('timestamp', 'desc')
-                .limit(5000)
-                .get()
-                .then(function(res){
-                    _cloudData = res.data.map(function(item){
-                        return item.data || item;
-                    });
-                    _cloudLoaded = true;
-                    console.log('从云端加载了', _cloudData.length, '条数据');
-                    refreshAllStats();
-                })
-                .catch(function(err){
-                    console.log('云端数据加载失败:', err);
-                    loadLocalData();
+            db.collection('risc_assessments').limit(5000).get().then(function(res){
+                _cloudData = res.data.map(function(item){
+                    return item.data || item;
                 });
+                _cloudLoaded = true;
+                console.log('SDK加载了', _cloudData.length, '条数据');
+                refreshAllStats();
+            }).catch(function(err){
+                console.log('SDK加载失败:', err);
+                loadLocalData();
+            });
+        }
+
+        function loadCloudData(){
+            loadCloudDataREST();
         }
 
         function loadLocalData(){
