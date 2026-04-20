@@ -463,8 +463,24 @@
                     <button class="btn btn-primary" onclick="nextQuestion()" id="btn-nationality" disabled>下一题 <span class="en">Next</span></button>
                 </div>
             </div>
+            <!-- 性别问题 -->
+            <div class="question-container" id="q-gender">
+                <div class="question-title"><span class="question-number">3</span>您的性别是？<span class="en">What is your gender?</span></div>
+                <div class="options" id="options-q-gender">
+                    <label class="option" data-value="male" data-gender="male"><span class="checkbox"></span><span class="option-label">男性 <span class="en">Male</span></span></label>
+                    <label class="option" data-value="female" data-gender="female"><span class="checkbox"></span><span class="option-label">女性 <span class="en">Female</span></span></label>
+                    <label class="option" data-value="other" data-gender="other"><span class="checkbox"></span><span class="option-label">其他 <span class="en">Other</span></span></label>
+                </div>
+                <div id="genderOtherInput" style="display:none; margin-top:10px;">
+                    <input type="text" id="genderOtherText" placeholder="请说明/Please specify" style="width:100%; padding:10px 12px; border:2px solid #e0e0e0; border-radius:8px; font-size:14px;">
+                </div>
+                <div class="buttons">
+                    <button class="btn btn-secondary" onclick="prevQuestion()">上一题 <span class="en">Previous</span></button>
+                    <button class="btn btn-primary" onclick="nextQuestion()" id="btn-gender" disabled>下一题 <span class="en">Next</span></button>
+                </div>
+            </div>
             <div class="question-container" id="q2">
-                <div class="question-title"><span class="question-number">3</span>您是否有以下疾病史？（可多选）<span class="en">Do you have any of the following medical history? (Multiple selection)</span></div>
+                <div class="question-title"><span class="question-number">4</span>您是否有以下疾病史？（可多选）<span class="en">Do you have any of the following medical history? (Multiple selection)</span></div>
                 <p class="multi-select-hint">💡 可选择多个选项 <span class="en">Multiple selection allowed</span></p>
                 <div class="options" id="options-q2">
                     <label class="option" data-value="0" data-is-none="true"><span class="checkbox"></span><span class="option-label">无 <span class="en">None</span></span></label>
@@ -477,7 +493,7 @@
                 <div class="buttons"><button class="btn btn-secondary" onclick="prevQuestion()">上一题 <span class="en">Previous</span></button><button class="btn btn-primary" onclick="nextQuestion()">下一题 <span class="en">Next</span></button></div>
             </div>
             <div class="question-container" id="q3">
-                <div class="question-title"><span class="question-number">4</span>最近一个月内，您是否出现过以下症状？（可多选）<span class="en">In the past month, have you experienced any of the following symptoms? (Multiple selection)</span></div>
+                <div class="question-title"><span class="question-number">5</span>最近一个月内，您是否出现过以下症状？（可多选）<span class="en">In the past month, have you experienced any of the following symptoms? (Multiple selection)</span></div>
                 <p class="multi-select-hint">💡 可选择多个选项 <span class="en">Multiple selection allowed</span></p>
                 <div class="options" id="options-q3">
                     <label class="option" data-value="0" data-is-none="true"><span class="checkbox"></span><span class="option-label">无任何不适 <span class="en">No symptoms</span></span></label>
@@ -490,7 +506,7 @@
                 <div class="buttons"><button class="btn btn-secondary" onclick="prevQuestion()">上一题 <span class="en">Previous</span></button><button class="btn btn-primary" onclick="nextQuestion()">下一题 <span class="en">Next</span></button></div>
             </div>
             <div class="question-container" id="q4">
-                <div class="question-title"><span class="question-number">5</span>这些症状通常在什么情况下出现？<span class="en">When do these symptoms usually occur?</span></div>
+                <div class="question-title"><span class="question-number">6</span>这些症状通常在什么情况下出现？<span class="en">When do these symptoms usually occur?</span></div>
                 <div class="options" id="options-q4">
                     <label class="option" data-value="5"><span class="checkbox"></span><span class="option-label">仅在剧烈运动时 <span class="en">Only during intense exercise</span></span></label>
                     <label class="option" data-value="12"><span class="checkbox"></span><span class="option-label">在日常活动中 <span class="en">During daily activities</span></span></label>
@@ -500,7 +516,7 @@
                 <div class="buttons"><button class="btn btn-secondary" onclick="prevQuestion()">上一题 <span class="en">Previous</span></button><button class="btn btn-primary" onclick="nextQuestion()" id="btn-q4" disabled>下一题 <span class="en">Next</span></button></div>
             </div>
             <div class="question-container" id="q5">
-                <div class="question-title"><span class="question-number">6</span>您的直系亲属中，是否有人在50岁前发生过心脏猝死或确诊心脏病？<span class="en">Has any immediate family member experienced sudden cardiac death or been diagnosed with heart disease before age 50?</span></div>
+                <div class="question-title"><span class="question-number">7</span>您的直系亲属中，是否有人在50岁前发生过心脏猝死或确诊心脏病？<span class="en">Has any immediate family member experienced sudden cardiac death or been diagnosed with heart disease before age 50?</span></div>
                 <div class="options" id="options-q5">
                     <label class="option" data-value="0"><span class="checkbox"></span><span class="option-label">无 <span class="en">No</span></span></label>
                     <label class="option" data-value="20"><span class="checkbox"></span><span class="option-label">有，1位 <span class="en">Yes, 1 person</span></span></label>
@@ -510,7 +526,7 @@
                 <div class="buttons"><button class="btn btn-secondary" onclick="prevQuestion()">上一题 <span class="en">Previous</span></button><button class="btn btn-primary" onclick="nextQuestion()" id="btn-q5" disabled>下一题 <span class="en">Next</span></button></div>
             </div>
             <div class="question-container" id="q6">
-                <div class="question-title"><span class="question-number">7</span>过去2周您跑步的频率和强度如何？<span class="en">What was your running frequency and intensity in the past 2 weeks?</span></div>
+                <div class="question-title"><span class="question-number">8</span>过去2周您跑步的频率和强度如何？<span class="en">What was your running frequency and intensity in the past 2 weeks?</span></div>
                 <div class="options" id="options-q6">
                     <label class="option" data-value="0"><span class="checkbox"></span><span class="option-label">过去2周跑步1-4次，轻松跑为主 <span class="en">1-4 runs in past 2 weeks, easy runs</span></span></label>
                     <label class="option" data-value="3"><span class="checkbox"></span><span class="option-label">过去2周跑步5-8次，中等强度 <span class="en">5-8 runs in past 2 weeks, moderate intensity</span></span></label>
@@ -520,7 +536,7 @@
                 <div class="buttons"><button class="btn btn-secondary" onclick="prevQuestion()">上一题 <span class="en">Previous</span></button><button class="btn btn-primary" onclick="nextQuestion()" id="btn-q6" disabled>下一题 <span class="en">Next</span></button></div>
             </div>
             <div class="question-container" id="q7">
-                <div class="question-title"><span class="question-number">8</span>您跑步前是否有热身习惯？<span class="en">Do you warm up before running?</span></div>
+                <div class="question-title"><span class="question-number">9</span>您跑步前是否有热身习惯？<span class="en">Do you warm up before running?</span></div>
                 <div class="options" id="options-q7">
                     <label class="option" data-value="0"><span class="checkbox"></span><span class="option-label">每次都充分热身（10分钟以上） <span class="en">Always warm up thoroughly (10+ min)</span></span></label>
                     <label class="option" data-value="3"><span class="checkbox"></span><span class="option-label">偶尔热身 <span class="en">Sometimes warm up</span></span></label>
@@ -530,7 +546,7 @@
                 <div class="buttons"><button class="btn btn-secondary" onclick="prevQuestion()">上一题 <span class="en">Previous</span></button><button class="btn btn-primary" onclick="nextQuestion()" id="btn-q7" disabled>下一题 <span class="en">Next</span></button></div>
             </div>
             <div class="question-container" id="q8">
-                <div class="question-title"><span class="question-number">9</span>您通常在什么时间段跑步？<span class="en">What time of day do you usually run?</span></div>
+                <div class="question-title"><span class="question-number">10</span>您通常在什么时间段跑步？<span class="en">What time of day do you usually run?</span></div>
                 <div class="options" id="options-q8">
                     <label class="option" data-value="0"><span class="checkbox"></span><span class="option-label">上午9点之后或下午 <span class="en">After 9 AM or afternoon</span></span></label>
                     <label class="option" data-value="10"><span class="checkbox"></span><span class="option-label">清晨5-9点（心梗高发时段） <span class="en">Early morning 5-9 AM (high risk period)</span></span></label>
@@ -540,7 +556,7 @@
                 <div class="buttons"><button class="btn btn-secondary" onclick="prevQuestion()">上一题 <span class="en">Previous</span></button><button class="btn btn-primary" onclick="nextQuestion()" id="btn-q8" disabled>下一题 <span class="en">Next</span></button></div>
             </div>
             <div class="question-container" id="q9">
-                <div class="question-title"><span class="question-number">10</span>您最近一次全面体检是什么时候？<span class="en">When was your last comprehensive health checkup?</span></div>
+                <div class="question-title"><span class="question-number">11</span>您最近一次全面体检是什么时候？<span class="en">When was your last comprehensive health checkup?</span></div>
                 <div class="options" id="options-q9">
                     <label class="option" data-value="0"><span class="checkbox"></span><span class="option-label">1年内 <span class="en">Within 1 year</span></span></label>
                     <label class="option" data-value="5"><span class="checkbox"></span><span class="option-label">1-2年内 <span class="en">1-2 years ago</span></span></label>
@@ -550,7 +566,7 @@
                 <div class="buttons"><button class="btn btn-secondary" onclick="prevQuestion()">上一题 <span class="en">Previous</span></button><button class="btn btn-primary" onclick="nextQuestion()" id="btn-q9" disabled>下一题 <span class="en">Next</span></button></div>
             </div>
             <div class="question-container" id="q10">
-                <div class="question-title"><span class="question-number">11</span>您是否了解以下中医经络急救穴位？（可多选）<span class="en">Do you know the following TCM acupressure points? (Multiple selection)</span></div>
+                <div class="question-title"><span class="question-number">12</span>您是否了解以下中医经络急救穴位？（可多选）<span class="en">Do you know the following TCM acupressure points? (Multiple selection)</span></div>
                 <p class="multi-select-hint">💡 可选择多个选项 <span class="en">Multiple selection allowed</span></p>
                 <div class="options" id="options-q10">
                     <label class="option" data-value="0" data-is-none="true"><span class="checkbox"></span><span class="option-label">都不了解 <span class="en">None</span></span></label>
@@ -563,7 +579,7 @@
                 <div class="buttons"><button class="btn btn-secondary" onclick="prevQuestion()">上一题 <span class="en">Previous</span></button><button class="btn btn-primary" onclick="nextQuestion()">下一题 <span class="en">Next</span></button></div>
             </div>
             <div class="question-container" id="q11">
-                <div class="question-title"><span class="question-number">12</span>您是否掌握以下西医急救技能或准备？（可多选）<span class="en">Do you have the following first aid skills or preparations? (Multiple selection)</span></div>
+                <div class="question-title"><span class="question-number">13</span>您是否掌握以下西医急救技能或准备？（可多选）<span class="en">Do you have the following first aid skills or preparations? (Multiple selection)</span></div>
                 <p class="multi-select-hint">💡 可选择多个选项 <span class="en">Multiple selection allowed</span></p>
                 <div class="options" id="options-q11">
                     <label class="option" data-value="0" data-is-none="true"><span class="checkbox"></span><span class="option-label">都不了解/未准备 <span class="en">None</span></span></label>
@@ -623,28 +639,68 @@
         function generateAgeGroups() {
             const container = document.getElementById('options-q1');
             let html = '';
-            // 15岁以下
-            html += `<label class="option" data-value="0"><span class="checkbox"></span><span class="option-label">15岁以下 <span class="en">Under 15 years old</span></span></label>`;
-            // 16-20岁到76-80岁
-            for (let age = 16; age <= 76; age += 5) {
-                const endAge = age + 4;
-                const score = Math.min(Math.floor((age - 10) / 5) * 2, 35);
-                html += `<label class="option" data-value="${score}"><span class="checkbox"></span><span class="option-label">${age}-${endAge}岁 <span class="en">${age}-${endAge} years old</span></span></label>`;
-            }
-            // 81岁以上
-            html += `<label class="option" data-value="30"><span class="checkbox"></span><span class="option-label">81岁以上 <span class="en">81+ years old</span></span></label>`;
+            // 年龄段选项（15个）
+            const ageGroups = [
+                { label: '15岁以下', labelEn: 'Under 15 years old', score: 0 },
+                { label: '15-19岁', labelEn: '15-19 years old', score: 2 },
+                { label: '20-24岁', labelEn: '20-24 years old', score: 4 },
+                { label: '25-29岁', labelEn: '25-29 years old', score: 6 },
+                { label: '30-34岁', labelEn: '30-34 years old', score: 8 },
+                { label: '35-39岁', labelEn: '35-39 years old', score: 10 },
+                { label: '40-44岁', labelEn: '40-44 years old', score: 12 },
+                { label: '45-49岁', labelEn: '45-49 years old', score: 14 },
+                { label: '50-54岁', labelEn: '50-54 years old', score: 16 },
+                { label: '55-59岁', labelEn: '55-59 years old', score: 18 },
+                { label: '60-64岁', labelEn: '60-64 years old', score: 20 },
+                { label: '65-69岁', labelEn: '65-69 years old', score: 22 },
+                { label: '70-74岁', labelEn: '70-74 years old', score: 24 },
+                { label: '75-79岁', labelEn: '75-79 years old', score: 26 },
+                { label: '81岁以上', labelEn: '81+ years old', score: 30 }
+            ];
+            ageGroups.forEach(group => {
+                html += `<label class="option" data-value="${group.score}"><span class="checkbox"></span><span class="option-label">${group.label} <span class="en">${group.labelEn}</span></span></label>`;
+            });
             container.innerHTML = html;
             container.querySelectorAll('.option').forEach(option => { option.addEventListener('click', function() { handleOptionClick('q1', this); }); });
         }
-        let answers = { q1: null, nationality: null, nationalityDetail: null, q2: [], q3: [], q4: null, q5: null, q6: null, q7: null, q8: null, q9: null, q10: [], q11: [] };
+        let answers = { q1: null, nationality: null, nationalityDetail: null, gender: null, genderDetail: null, q2: [], q3: [], q4: null, q5: null, q6: null, q7: null, q8: null, q9: null, q10: [], q11: [] };
         let currentQuestion = 0;
-        const questionOrder = ['q1', 'q-nationality', 'q2', 'q3', 'q4', 'q5', 'q6', 'q7', 'q8', 'q9', 'q10', 'q11'];
+        const questionOrder = ['q1', 'q-nationality', 'q-gender', 'q2', 'q3', 'q4', 'q5', 'q6', 'q7', 'q8', 'q9', 'q10', 'q11'];
         const multiSelectQuestions = ['q2', 'q3', 'q10', 'q11'];
         function getParticipantNumber() { const data = JSON.parse(localStorage.getItem('risc_assessments') || '[]'); return data.length + 1; }
         function updateParticipantDisplay() { const num = getParticipantNumber(); document.getElementById('welcomeParticipantNum').textContent = `第 ${num} 位 | No. ${num}`; document.getElementById('resultParticipantNum').textContent = `第 ${num} 位 | No. ${num}`; }
         // 监听 storage 事件，实现跨标签页数据同步
         window.addEventListener('storage', function(e) { if (e.key === 'risc_assessments') { updateParticipantDisplay(); } });
-        document.addEventListener('DOMContentLoaded', function() { generateAgeGroups(); updateParticipantDisplay(); questionOrder.forEach(qId => { const container = document.getElementById('options-' + qId); if (container) { container.querySelectorAll('.option').forEach(option => { option.addEventListener('click', function() { handleOptionClick(qId, this); }); }); } }); });
+        document.addEventListener('DOMContentLoaded', function() { generateAgeGroups(); updateParticipantDisplay(); questionOrder.forEach(qId => { const container = document.getElementById('options-' + qId); if (container) { container.querySelectorAll('.option').forEach(option => { option.addEventListener('click', function() { handleOptionClick(qId, this); }); }); } }); initGenderQuestion(); });
+        
+        // 初始化性别问题
+        function initGenderQuestion() {
+            const container = document.getElementById('options-q-gender');
+            if (!container) return;
+            container.querySelectorAll('.option').forEach(option => {
+                option.addEventListener('click', function() {
+                    container.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
+                    this.classList.add('selected');
+                    const gender = this.dataset.gender;
+                    answers.gender = gender;
+                    // 显示/隐藏"其他"输入框
+                    const otherInput = document.getElementById('genderOtherInput');
+                    if (gender === 'other') {
+                        otherInput.style.display = 'block';
+                    } else {
+                        otherInput.style.display = 'none';
+                        document.getElementById('genderOtherText').value = '';
+                        answers.genderDetail = null;
+                    }
+                    document.getElementById('btn-gender').disabled = false;
+                });
+            });
+            // 监听"其他"输入框
+            document.getElementById('genderOtherText').addEventListener('input', function() {
+                answers.genderDetail = this.value.trim();
+            });
+        }
+        
         function checkForeignSelect() {
             const select = document.getElementById('foreignCountry');
             const otherInput = document.getElementById('foreignOtherText');
@@ -701,7 +757,7 @@
             currentQuestion = 0; 
             updateProgress(); 
         }
-        function nextQuestion() { const currentId = questionOrder[currentQuestion]; if (currentId === 'q-nationality') { const select = document.getElementById('foreignCountry'); const dualInput = document.getElementById('dualCountries'); if (select.value) { if (select.value === '其他') { answers.nationalityDetail = '其他: ' + document.getElementById('foreignOtherText').value; answers.nationality = 'other'; } else { answers.nationalityDetail = select.value; answers.nationality = select.value; } } else if (dualInput.value.trim()) { answers.nationalityDetail = dualInput.value; answers.nationality = 'dual'; } } if (currentId === 'q3') { const hasSymptoms = answers.q3.length > 0 && !answers.q3.includes(0); if (!hasSymptoms) currentQuestion += 2; else currentQuestion++; } else currentQuestion++; if (currentQuestion < questionOrder.length) showQuestion(questionOrder[currentQuestion]); }
+        function nextQuestion() { const currentId = questionOrder[currentQuestion]; if (currentId === 'q-nationality') { const select = document.getElementById('foreignCountry'); const dualInput = document.getElementById('dualCountries'); if (select.value) { if (select.value === '其他') { answers.nationalityDetail = '其他: ' + document.getElementById('foreignOtherText').value; answers.nationality = 'other'; } else { answers.nationalityDetail = select.value; answers.nationality = select.value; } } else if (dualInput.value.trim()) { answers.nationalityDetail = dualInput.value; answers.nationality = 'dual'; } } if (currentId === 'q-gender') { if (answers.gender === 'other' && document.getElementById('genderOtherText').value.trim()) { answers.genderDetail = document.getElementById('genderOtherText').value.trim(); } } if (currentId === 'q3') { const hasSymptoms = answers.q3.length > 0 && !answers.q3.includes(0); if (!hasSymptoms) currentQuestion += 2; else currentQuestion++; } else currentQuestion++; if (currentQuestion < questionOrder.length) showQuestion(questionOrder[currentQuestion]); }
         function prevQuestion() { if (currentQuestion > 0) { currentQuestion--; showQuestion(questionOrder[currentQuestion]); } }
         function showQuestion(questionId) { document.querySelectorAll('.question-container').forEach(q => q.classList.remove('active')); document.getElementById(questionId).classList.add('active'); updateProgress(); }
         function updateProgress() { const progress = ((currentQuestion + 1) / questionOrder.length) * 100; document.getElementById('progressFill').style.width = progress + '%'; }
@@ -712,18 +768,18 @@
         function animateScore(targetScore) { const scoreNumber = document.getElementById('scoreNumber'); const scoreCircle = document.getElementById('scoreCircle'); let current = 0; const duration = 1500, steps = 60, increment = targetScore / steps, interval = duration / steps; const timer = setInterval(() => { current += increment; if (current >= targetScore) { current = targetScore; clearInterval(timer); } scoreNumber.textContent = Math.round(current); const circumference = 2 * Math.PI * 70; scoreCircle.style.strokeDashoffset = circumference - (current / 100) * circumference; }, interval); }
         function calculatePercentile(score) { const mean = 35, stdDev = 18; const z = (score - mean) / (stdDev * Math.sqrt(2)); return Math.round(50 * (1 + erf(z))); }
         function erf(x) { const a1 = 0.254829592, a2 = -0.284496736, a3 = 1.421413741, a4 = -1.453152027, a5 = 1.061405429, p = 0.3275911; const sign = x < 0 ? -1 : 1; x = Math.abs(x); const t = 1.0 / (1.0 + p * x); const y = 1.0 - (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t * Math.exp(-x * x); return sign * y; }
-        function showRiskLevel(score) { const riskLevel = document.getElementById('riskLevel'); if (score <= 30) { riskLevel.className = 'risk-level risk-low'; riskLevel.innerHTML = '✅ 低风险 | Low Risk'; } else if (score <= 60) { riskLevel.className = 'risk-level risk-medium'; riskLevel.innerHTML = '⚠️ 中风险 | Medium Risk'; } else { riskLevel.className = 'risk-level risk-high'; riskLevel.innerHTML = '🚨 高风险 | High Risk'; } }
+        function showRiskLevel(score) { const riskLevel = document.getElementById('riskLevel'); if (score <= 20) { riskLevel.className = 'risk-level risk-low'; riskLevel.innerHTML = '✅ 极低风险 | Very Low Risk'; } else if (score <= 40) { riskLevel.className = 'risk-level risk-low'; riskLevel.innerHTML = '🟢 低风险 | Low Risk'; } else if (score <= 60) { riskLevel.className = 'risk-level risk-medium'; riskLevel.innerHTML = '⚠️ 中风险 | Medium Risk'; } else if (score <= 80) { riskLevel.className = 'risk-level risk-high'; riskLevel.innerHTML = '🟠 高风险 | High Risk'; } else { riskLevel.className = 'risk-level risk-high'; riskLevel.innerHTML = '🚨 极高风险 | Very High Risk'; } }
         function showBreakdown(breakdown, total) { const list = document.getElementById('breakdownList'); list.innerHTML = ''; for (const [key, value] of Object.entries(breakdown)) { const displayValue = value < 0 ? `${value} (降低风险 | Risk Reduced)` : value; list.innerHTML += `<div class="breakdown-item"><span>${key}</span><span>${displayValue}</span></div>`; } list.innerHTML += `<div class="breakdown-item"><span>总分 | Total</span><span>${total}</span></div>`; }
         function generateRecommendations(score, answers) { const list = document.getElementById('recommendationList'); const recommendations = []; if (score <= 30) recommendations.push('继续保持健康的生活方式，建议每年定期体检 <span class="en">Continue healthy lifestyle, annual checkup recommended</span>'); else if (score <= 60) recommendations.push('建议进行心脏超声波或动态心电图检查 <span class="en">Echocardiogram or Holter monitor recommended</span>'); else recommendations.push('【紧急】强烈建议立即就医 <span class="en">【Urgent】Seek medical attention immediately</span>'); if (answers.q10.includes(0)) recommendations.push('建议学习中医经络急救知识 <span class="en">Learn TCM acupressure for emergency</span>'); if (answers.q11.includes(0)) recommendations.push('强烈建议学习心肺复苏术（CPR）和AED使用方法 <span class="en">Learn CPR and AED operation strongly recommended</span>'); recommendations.push('跑步时尽量结伴而行，告知亲友您的行程路线 <span class="en">Run with partners and inform family of your route</span>'); list.innerHTML = recommendations.map(rec => `<li>${rec}</li>`).join(''); }
         
         // 根据分数获取年龄标签
         function getAgeLabelFromScore(score) {
             const ageMap = {
-                0: '15岁以下', 2: '16-20岁', 4: '21-25岁', 6: '26-30岁', 8: '31-35岁',
-                10: '36-40岁', 12: '41-45岁', 14: '46-50岁', 16: '51-55岁', 18: '56-60岁',
-                20: '61-65岁', 22: '66-70岁', 24: '71-75岁', 26: '76-80岁', 30: '81岁以上'
+                0: '15岁以下', 2: '15-19岁', 4: '20-24岁', 6: '25-29岁', 8: '30-34岁',
+                10: '35-39岁', 12: '40-44岁', 14: '45-49岁', 16: '50-54岁', 18: '55-59岁',
+                20: '60-64岁', 22: '65-69岁', 24: '70-74岁', 26: '75-79岁', 30: '81岁以上'
             };
-            return ageMap[score] || '21-25岁';
+            return ageMap[score] || '20-24岁';
         }
         
         // 复制评估报告到剪贴板
@@ -853,7 +909,7 @@
                 return;
             }
             
-            answers = { q1: null, nationality: null, nationalityDetail: null, q2: [], q3: [], q4: null, q5: null, q6: null, q7: null, q8: null, q9: null, q10: [], q11: [] }; currentQuestion = 0; document.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected')); document.querySelectorAll('button[id^="btn-"]').forEach(btn => btn.disabled = true); document.getElementById('warningBox').style.display = 'none'; document.getElementById('foreignInput').classList.remove('show'); document.getElementById('dualInput').classList.remove('show'); document.getElementById('foreignCountry').value = ''; document.getElementById('foreignOtherText').value = ''; document.getElementById('foreignOtherText').style.display = 'none'; document.getElementById('dualCountries').value = ''; document.querySelectorAll('.question-container, .result-container').forEach(el => el.classList.remove('active')); document.getElementById('welcome').classList.add('active'); document.getElementById('progressFill').style.width = '0%'; updateParticipantDisplay(); 
+            answers = { q1: null, nationality: null, nationalityDetail: null, gender: null, genderDetail: null, q2: [], q3: [], q4: null, q5: null, q6: null, q7: null, q8: null, q9: null, q10: [], q11: [] }; currentQuestion = 0; document.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected')); document.querySelectorAll('button[id^="btn-"]').forEach(btn => btn.disabled = true); document.getElementById('warningBox').style.display = 'none'; document.getElementById('foreignInput').classList.remove('show'); document.getElementById('dualInput').classList.remove('show'); document.getElementById('foreignCountry').value = ''; document.getElementById('foreignOtherText').value = ''; document.getElementById('foreignOtherText').style.display = 'none'; document.getElementById('dualCountries').value = ''; document.getElementById('genderOtherInput').style.display = 'none'; document.getElementById('genderOtherText').value = ''; document.querySelectorAll('.question-container, .result-container').forEach(el => el.classList.remove('active')); document.getElementById('welcome').classList.add('active'); document.getElementById('progressFill').style.width = '0%'; updateParticipantDisplay(); 
         }
         
         // ========== 三重防刷机制 | Anti-Spam Mechanism ==========
@@ -1061,11 +1117,113 @@
             showBreakdown(scoreBreakdown, totalScore);
             generateRecommendations(totalScore, answers);
             saveAssessmentData(totalScore, percentile, scoreBreakdown);
-            syncToTencentDoc(totalScore, scoreBreakdown);
+            syncToFeishu(totalScore, scoreBreakdown);
         }
         
         // 覆盖原有的showResult
         window.showResult = showResultWithVerification;
+    
+
+        // ========== 飞书多维表格同步（v2）| Feishu Bitable Sync v2 ==========
+        
+        // 飞书配置
+        const FEISHU_APP_ID = 'cli_a949d864a575dbd7';
+        const FEISHU_APP_SECRET = '9tK5rDG6NX5snIb1dUCAgbbEsCqKJdBm';
+        const FEISHU_APP_TOKEN = 'I5R5bCZHRaS9eHsAmcnc6nkKnlb';
+        const FEISHU_TABLE_ID = 'tblXOAvR3G015i4y';
+
+        // 获取飞书 token
+        function getFeishuToken(callback) {
+            const body = JSON.stringify({ app_id: FEISHU_APP_ID, app_secret: FEISHU_APP_SECRET });
+            fetch('https://open.feishu.cn/open-apis/auth/v3/tenant_access_token/internal', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Content-Length': body.length },
+                body
+            }).then(r => r.json()).then(data => {
+                if (data.tenant_access_token) callback(data.tenant_access_token);
+            }).catch(e => console.log('Feishu token error:', e));
+        }
+
+        // 获取年龄标签（匹配飞书选项）
+        function getAgeGroupLabel(score) {
+            const map = {
+                0: '14岁以下', 2: '15-19岁', 4: '20-24岁', 6: '25-29岁', 8: '30-34岁',
+                10: '35-39岁', 12: '40-44岁', 14: '45-49岁', 16: '50-54岁', 18: '55-59岁',
+                20: '60-64岁', 22: '65-69岁', 24: '70-74岁', 26: '75-79岁', 30: '81岁以上'
+            };
+            return map[score] || '20-24岁';
+        }
+
+        // 获取风险等级（5级）
+        function getRiskLabel(score) {
+            if (score <= 20) return '极低风险';
+            if (score <= 40) return '低风险';
+            if (score <= 60) return '中风险';
+            if (score <= 80) return '高风险';
+            return '极高风险';
+        }
+
+        // 同步到飞书
+        function syncToFeishu(totalScore, scoreBreakdown) {
+            getFeishuToken(token => {
+                // 构建详细分项JSON（各维度原始分，满分100）
+                const ageScore = answers.q1 || 0;
+                const diseaseScore = (answers.q2 || []).reduce((a, b) => a + b, 0);
+                const symptomScore = (answers.q3 || []).reduce((a, b) => a + b, 0);
+                const symptomTimingScore = (!answers.q3.includes(0) && answers.q4) ? answers.q4 : 0;
+                const familyScore = answers.q5 || 0;
+                const exerciseScore = (answers.q6 || 0) + (answers.q7 || 0) + (answers.q8 || 0) + (answers.q9 || 0);
+                const tcmScore = (answers.q10 || []).filter(x => x < 0).reduce((a, b) => a + b, 0);
+                const westernScore = (answers.q11 || []).filter(x => x < 0).reduce((a, b) => a + b, 0);
+
+                const detailJson = JSON.stringify({
+                    RISC指数: totalScore,
+                    满分: 100,
+                    各维度原始分: {
+                        年龄因素: ageScore,
+                        基础疾病: diseaseScore,
+                        症状评估: symptomScore,
+                        症状时机: symptomTimingScore,
+                        家族史: familyScore,
+                        运动习惯: exerciseScore,
+                        中医急救: tcmScore,
+                        西医技能: westernScore
+                    }
+                });
+
+                const nationality = answers.nationalityDetail || answers.nationality || '';
+                
+                // 获取性别标签
+                let genderLabel = '';
+                if (answers.gender === 'male') genderLabel = '男性';
+                else if (answers.gender === 'female') genderLabel = '女性';
+                else if (answers.gender === 'other') genderLabel = answers.genderDetail || '其他';
+                
+                const fields = {
+                    '年龄段': getAgeGroupLabel(ageScore),
+                    '性别': genderLabel,
+                    '国籍/地区': nationality,
+                    'RISC指数': totalScore,
+                    '风险等级': getRiskLabel(totalScore),
+                    '详细分项': detailJson
+                };
+
+                const body = JSON.stringify({ fields });
+
+                fetch('https://open.feishu.cn/open-apis/bitable/v1/apps/' + FEISHU_APP_TOKEN + '/tables/' + FEISHU_TABLE_ID + '/records', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token, 'Content-Length': body.length },
+                    body
+                }).then(r => r.json()).then(data => {
+                    if (data.code === 0) {
+                        console.log('✅ 飞书同步成功，record_id:', data.data.record.record_id);
+                    } else {
+                        console.log('❌ 飞书同步失败:', JSON.stringify(data));
+                    }
+                }).catch(e => console.log('Feishu sync error:', e));
+            });
+        }
+
     </script>
 </body>
 </html>
