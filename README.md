@@ -15,12 +15,14 @@ Runner's Integrated Safety & Care - 跑者心脏风险评估系统
 - 西医急救技能评估
 - 个性化建议生成
 - 管理后台（需登录）
+- 飞书云端数据同步
 
 ## 访问地址
 
 - 评估页面：https://linhai1973.github.io/risc-runner-heart-risk/
-- 管理后台：https://linhai1973.github.io/risc-runner-heart-risk/admin-v3.html
+- 管理后台：https://linhai1973.github.io/risc-runner-heart-risk/admin.html
 - 备用站点（Gitee）：https://linhaiforest.gitee.io/risc-heart-risk/（待开启）
+- 飞书表格：https://my.feishu.cn/base/I5R5bCZHRaS9eHsAmcnc6nkKnlb
 
 ## 创建者
 
