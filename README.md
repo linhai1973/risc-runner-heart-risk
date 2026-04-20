@@ -19,7 +19,8 @@ Runner's Integrated Safety & Care - 跑者心脏风险评估系统
 ## 访问地址
 
 - 评估页面：https://linhai1973.github.io/risc-runner-heart-risk/
-- 管理后台：https://linhai1973.github.io/risc-runner-heart-risk/admin.html
+- 管理后台：https://linhai1973.github.io/risc-runner-heart-risk/admin-v3.html
+- 备用站点（Gitee）：https://linhaiforest.gitee.io/risc-heart-risk/（待开启）
 
 ## 创建者
 

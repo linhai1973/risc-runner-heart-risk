@@ -344,8 +344,8 @@
                 };
                 localStorage.setItem('risc_admin_auth', JSON.stringify(loginData));
                 
-                // 跳转到管理后台
-                window.location.href = 'admin.html';
+                // 跳转到管理后台（新版v3）
+                window.location.href = 'admin-v3.html';
             } else {
                 showError('邮箱或密码错误，请重试');
             }
@@ -383,8 +383,8 @@
             };
             localStorage.setItem('risc_admin_auth', JSON.stringify(loginData));
             
-            // 跳转到管理后台
-            window.location.href = 'admin.html';
+            // 跳转到管理后台（新版v3）
+            window.location.href = 'admin-v3.html';
         }
 
         // 发送验证码
@@ -433,7 +433,7 @@
         window.onload = function() {
             const auth = JSON.parse(localStorage.getItem('risc_admin_auth') || '{}');
             if (auth.loggedIn) {
-                window.location.href = 'admin.html';
+                window.location.href = 'admin-v3.html';
             }
         };
     </script>
