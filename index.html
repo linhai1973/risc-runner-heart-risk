@@ -641,7 +641,7 @@
             let html = '';
             // 年龄段选项（15个）
             const ageGroups = [
-                { label: '15岁以下', labelEn: 'Under 15 years old', score: 0 },
+                { label: '14岁以下', labelEn: 'Under 14 years old', score: 0 },
                 { label: '15-19岁', labelEn: '15-19 years old', score: 2 },
                 { label: '20-24岁', labelEn: '20-24 years old', score: 4 },
                 { label: '25-29岁', labelEn: '25-29 years old', score: 6 },
@@ -655,7 +655,7 @@
                 { label: '65-69岁', labelEn: '65-69 years old', score: 22 },
                 { label: '70-74岁', labelEn: '70-74 years old', score: 24 },
                 { label: '75-79岁', labelEn: '75-79 years old', score: 26 },
-                { label: '81岁以上', labelEn: '81+ years old', score: 30 }
+                { label: '80岁以上', labelEn: '80+ years old', score: 30 }
             ];
             ageGroups.forEach(group => {
                 html += `<label class="option" data-value="${group.score}"><span class="checkbox"></span><span class="option-label">${group.label} <span class="en">${group.labelEn}</span></span></label>`;
@@ -775,9 +775,9 @@
         // 根据分数获取年龄标签
         function getAgeLabelFromScore(score) {
             const ageMap = {
-                0: '15岁以下', 2: '15-19岁', 4: '20-24岁', 6: '25-29岁', 8: '30-34岁',
+                0: '14岁以下', 2: '15-19岁', 4: '20-24岁', 6: '25-29岁', 8: '30-34岁',
                 10: '35-39岁', 12: '40-44岁', 14: '45-49岁', 16: '50-54岁', 18: '55-59岁',
-                20: '60-64岁', 22: '65-69岁', 24: '70-74岁', 26: '75-79岁', 30: '81岁以上'
+                20: '60-64岁', 22: '65-69岁', 24: '70-74岁', 26: '75-79岁', 30: '80岁以上'
             };
             return ageMap[score] || '20-24岁';
         }
