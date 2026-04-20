@@ -708,49 +708,7 @@
         function saveAssessmentData(totalScore, percentile, scoreBreakdown) { const data = { id: Date.now(), timestamp: new Date().toISOString(), answers: JSON.parse(JSON.stringify(answers)), score: totalScore, percentile: percentile, breakdown: scoreBreakdown, riskLevel: totalScore <= 30 ? 'low' : (totalScore <= 60 ? 'medium' : 'high') }; let allData = JSON.parse(localStorage.getItem('risc_assessments') || '[]');
                 allData.push(data);
                 localStorage.setItem('risc_assessments', JSON.stringify(allData));
-                if(typeof _cloudbaseSave === 'function') _cloudbaseSave(data); allData.push(data); localStorage.setItem('risc_assessments', JSON.stringify(allData)); }
-        
-        // 发送数据到腾讯文档智能表
-        function syncToTencentDoc(totalScore, scoreBreakdown) {
-            // 腾讯文档智能表Webhook地址（需要用户自行创建后填入）
-            const TENCENT_DOC_WEBHOOK = localStorage.getItem('tencent_doc_webhook') || '';
-            
-            if (!TENCENT_DOC_WEBHOOK) {
-                console.log('未配置腾讯文档Webhook，数据仅保存在本地');
-                return;
-            }
-            
-            // 获取年龄标签
-            const ageLabel = getAgeLabelFromScore(answers.q1 || 0);
-            
-            // 获取风险等级
-            const riskLabel = totalScore <= 30 ? '低风险' : (totalScore <= 60 ? '中风险' : '高风险');
-            
-            // 构建发送数据
-            const payload = {
-                timestamp: new Date().toLocaleString('zh-CN'),
-                nationality: answers.nationalityDetail || '中国（大陆）',
-                ageGroup: ageLabel,
-                score: totalScore,
-                riskLevel: riskLabel,
-                breakdown: JSON.stringify(scoreBreakdown)
-            };
-            
-            // 发送到腾讯文档智能表
-            fetch(TENCENT_DOC_WEBHOOK, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(payload)
-            }).then(response => {
-                if (response.ok) {
-                    console.log('数据已同步到腾讯文档智能表');
-                }
-            }).catch(error => {
-                console.error('同步失败:', error);
-            });
-        }
+                console.log('数据已保存到本地 (' + allData.length + '条)'); }
         function animateScore(targetScore) { const scoreNumber = document.getElementById('scoreNumber'); const scoreCircle = document.getElementById('scoreCircle'); let current = 0; const duration = 1500, steps = 60, increment = targetScore / steps, interval = duration / steps; const timer = setInterval(() => { current += increment; if (current >= targetScore) { current = targetScore; clearInterval(timer); } scoreNumber.textContent = Math.round(current); const circumference = 2 * Math.PI * 70; scoreCircle.style.strokeDashoffset = circumference - (current / 100) * circumference; }, interval); }
         function calculatePercentile(score) { const mean = 35, stdDev = 18; const z = (score - mean) / (stdDev * Math.sqrt(2)); return Math.round(50 * (1 + erf(z))); }
         function erf(x) { const a1 = 0.254829592, a2 = -0.284496736, a3 = 1.421413741, a4 = -1.453152027, a5 = 1.061405429, p = 0.3275911; const sign = x < 0 ? -1 : 1; x = Math.abs(x); const t = 1.0 / (1.0 + p * x); const y = 1.0 - (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t * Math.exp(-x * x); return sign * y; }
@@ -869,45 +827,7 @@
         <p>创建者：林深似海 | Creator: Linshensihai | Email: 317884269@qq.com</p>
         <p>声明：本评估报告仅供参考，不能替代专业医疗诊断。如有任何不适症状，请立即就医。</p>
     </div>
-        // ========== 腾讯云数据收集 ==========
-        (function(){
-            var CLOUDBASE_ENV_ID = 'cloud1-3g9pwwkb851a556';
-            
-            function loadCloudBaseSDK(){
-                var script = document.createElement('script');
-                script.src = 'https://imgcache.qq.com/qcloud/cloudbase-js-sdk/2.1.0/cloudbase.full.min.js';
-                script.onload = function(){ initCloudBase(); };
-                script.onerror = function(){ console.log('CloudBase SDK加载失败，数据仅保存本地'); };
-                document.head.appendChild(script);
-            }
-            
-            function initCloudBase(){
-                if(!CLOUDBASE_ENV_ID || !window.cloudbase){
-                    console.log('CloudBase环境未配置，数据仅保存本地');
-                    return;
-                }
-                window._cbApp = cloudbase.init({ env: CLOUDBASE_ENV_ID });
-                window._cbApp.auth().signInAnonymously().then(function(){
-                    console.log('CloudBase匿名登录成功');
-                }).catch(function(){
-                    console.log('CloudBase匿名登录失败，数据仅保存本地');
-                });
-            }
-            
-            window._cloudbaseSave = function(data){
-                if(!window._cbApp || !window._cbApp.auth().hasLoginBefore()){
-                    return;
-                }
-                var db = window._cbApp.database();
-                db.collection('risc_assessments').add({ data: data }).then(function(res){
-                    console.log('云端数据保存成功，ID:', res.id);
-                }).catch(function(err){
-                    console.log('云端保存失败:', err);
-                });
-            };
-            
-            loadCloudBaseSDK();
-        })();
+
 
 
 </body>

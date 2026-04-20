@@ -36,7 +36,7 @@
         .risk-low { color: #10b981; }
         .risk-medium { color: #f59e0b; }
         .risk-high { color: #ef4444; }
-        .webhook-input { width: 100%; max-width: 500px; padding: 10px; border: 1px solid #ddd; border-radius: 6px; margin-bottom: 10px; }
+
     </style>
 
     <!-- 腾讯云开发SDK -->
@@ -137,13 +137,12 @@
         <!-- 系统设置 -->
         <div class="tab-content" id="tab-settings">
             <div class="chart-card">
-                <h2>🔗 腾讯文档智能表集成</h2>
-                <p style="margin-bottom: 15px; color: #666;">配置Webhook后，评估数据将自动同步到腾讯文档智能表</p>
-                <input type="text" id="webhookUrl" class="webhook-input" placeholder="请输入Webhook地址">
-                <br>
-                <button class="export-btn" onclick="saveWebhook()">💾 保存</button>
-                <button class="export-btn" onclick="testWebhook()">🧪 测试</button>
-                <div id="webhookStatus" style="margin-top: 10px; color: #666;"></div>
+                <h2>📊 数据管理</h2>
+                <p style="margin-bottom: 15px; color: #666;">评估数据存储在浏览器本地（localStorage）。可导出为 CSV/JSON 备份。</p>
+                <p style="margin-bottom: 10px; color: #888; font-size: 13px;">⚠️ 清除浏览器缓存会导致数据丢失，建议定期导出备份。</p>
+                <div style="margin-top: 15px;">
+                    <button class="export-btn" onclick="if(confirm('确定清空所有评估数据？此操作不可恢复！')){ localStorage.removeItem('risc_assessments'); refreshAllStats(); renderTable(); }">🗑️ 清空数据</button>
+                </div>
             </div>
         </div>
     </div>
@@ -429,37 +428,10 @@
             }
         }
 
-        // Webhook
-        function saveWebhook() {
-            var url = document.getElementById('webhookUrl').value;
-            localStorage.setItem('tencent_doc_webhook', url);
-            document.getElementById('webhookStatus').innerHTML = '<span style="color:green">✓ 已保存</span>';
-        }
-
-        function testWebhook() {
-            var url = document.getElementById('webhookUrl').value;
-            if (!url) {
-                alert('请输入Webhook地址');
-                return;
-            }
-            document.getElementById('webhookStatus').innerHTML = '测试中...';
-            fetch(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ test: true, time: new Date().toLocaleString('zh-CN') })
-            }).then(function(res) {
-                document.getElementById('webhookStatus').innerHTML = '<span style="color:green">✓ 连接成功</span>';
-            }).catch(function(err) {
-                document.getElementById('webhookStatus').innerHTML = '<span style="color:red">✗ 连接失败: ' + err.message + '</span>';
-            });
-        }
-
         // 初始化
         if (checkAuth()) {
             updateOverview();
             renderTable();
-            var savedWebhook = localStorage.getItem('tencent_doc_webhook') || '';
-            document.getElementById('webhookUrl').value = savedWebhook;
         }
         
         // 监听 storage 事件，实现跨标签页数据同步
@@ -470,106 +442,12 @@
             }
         });
     
-        // ========== 腾讯云数据读取 ==========
-        var CLOUDBASE_ENV_ID = 'cloud1-3g9pwwkb851a556';
-        var _cbApp = null;
-        var _cloudData = [];
-        var _cloudLoaded = false;
-
-        function initCloudBase(){
-            if(!CLOUDBASE_ENV_ID || !window.cloudbase) return;
-            _cbApp = cloudbase.init({ env: CLOUDBASE_ENV_ID });
-            _cbApp.auth().signInAnonymously().then(function(){
-                console.log('CloudBase登录成功');
-                loadCloudData();
-            }).catch(function(err){
-                console.log('CloudBase登录失败:', err);
-                loadLocalData(); // fallback to localStorage
-            });
-        }
-
-        // 使用REST API直接查询，绕过SDK的_openid过滤
-        function loadCloudDataREST(){
-            var envId = 'cloud1-3g9pwwkb851a556';
-            var url = 'https://tcb-api.tencentcloudapi.com/internal/api/v1/apps/' + envId + '/collections/risc_assessments/records?limit=5000&orderBy=timestamp&orderByType=desc&queryType=and';
-            _cbApp.auth().getTmpToken().then(function(tmpToken){
-                var token = tmpToken.token;
-                var request = window.indexedDB ? null : null;
-                // Use fetch with anonymous auth token
-                fetch(url, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Bearer ' + token,
-                        'X-TCB-OpenID': _cbApp.auth().getCurrentUser() ? _cbApp.auth().getCurrentUser().uid : ''
-                    }
-                }).then(function(res){ return res.json(); })
-                .then(function(result){
-                    if(result.data && result.data.records){
-                        _cloudData = result.data.records.map(function(item){
-                            return item.data || item;
-                        });
-                    } else if(Array.isArray(result.data)){
-                        _cloudData = result.data.map(function(item){
-                            return item.data || item;
-                        });
-                    } else {
-                        _cloudData = [];
-                    }
-                    _cloudLoaded = true;
-                    console.log('REST API加载了', _cloudData.length, '条数据');
-                    refreshAllStats();
-                }).catch(function(err){
-                    console.log('REST API失败，尝试SDK查询:', err);
-                    loadCloudDataSDK();
-                });
-            }).catch(function(err){
-                console.log('获取token失败:', err);
-                loadLocalData();
-            });
-        }
-
-        // SDK方式查询（会过滤_openid，仅作备用）
-        function loadCloudDataSDK(){
-            if(!_cbApp) return;
-            var db = _cbApp.database();
-            db.collection('risc_assessments').limit(5000).get().then(function(res){
-                _cloudData = res.data.map(function(item){
-                    return item.data || item;
-                });
-                _cloudLoaded = true;
-                console.log('SDK加载了', _cloudData.length, '条数据');
-                refreshAllStats();
-            }).catch(function(err){
-                console.log('SDK加载失败:', err);
-                loadLocalData();
-            });
-        }
-
-        function loadCloudData(){
-            loadCloudDataREST();
-        }
-
-        function loadLocalData(){
-            var allData = JSON.parse(localStorage.getItem('risc_assessments') || '[]');
-            _cloudData = allData;
-            _cloudLoaded = true;
-            refreshAllStats();
-        }
-
         function getAllData(){
-            return _cloudLoaded ? _cloudData : JSON.parse(localStorage.getItem('risc_assessments') || '[]');
+            return JSON.parse(localStorage.getItem('risc_assessments') || '[]');
         }
 
         // Override all functions that read data to use getAllData()
-        // Also auto-init on page load
-        if(document.readyState === 'loading'){
-            document.addEventListener('DOMContentLoaded', initCloudBase);
-        } else {
-            initCloudBase();
-        }
-
-        // Override refreshStats to use cloud data
+        // Override refreshStats to use local data
         var _origRefreshStats = refreshStats;
         refreshStats = function(){
             var allData = getAllData();
