@@ -57,6 +57,7 @@
             <button class="tab" onclick="switchTab('statistics')">📈 统计分析</button>
             <button class="tab" onclick="switchTab('records')">📋 数据记录</button>
             <button class="tab" onclick="switchTab('export')">📥 数据导出</button>
+            <button class="tab" onclick="switchTab('feishu')" style="background:#0066CC;color:white;">☁️ 飞书同步</button>
             <button class="tab" onclick="switchTab('settings')">⚙️ 系统设置</button>
         </div>
 
@@ -131,6 +132,27 @@
                     <option value="json">JSON</option>
                 </select>
                 <button class="export-btn" onclick="exportData()">📥 导出</button>
+            </div>
+        </div>
+
+        <!-- 飞书同步 -->
+        <div class="tab-content" id="tab-feishu">
+            <div class="chart-card">
+                <h2>☁️ 飞书云端数据同步</h2>
+                <p style="margin-bottom:15px;color:#666;">数据已同步至飞书多维表格，可实时查看和导出。API凭证已内置，无需额外配置。</p>
+                <div style="display:flex;gap:10px;margin-bottom:15px;">
+                    <button class="export-btn" onclick="syncFromFeishu()" style="background:#0066CC;">🔄 从飞书读取</button>
+                    <button class="export-btn" onclick="syncLocalToFeishu()" style="background:#f59e0b;">⬆️ 本地→飞书</button>
+                    <button class="export-btn" onclick="exportBackupForCron()" style="background:#6b7280;">💾 导出备份</button>
+                    <button class="export-btn" onclick="syncAndExport()" style="background:#10b981;">📥 同步后导出Excel</button>
+                </div>
+                <div id="feishuStatus" style="margin-bottom:15px;font-size:13px;color:#888;">⚪ 待同步</div>
+                <div id="feishuTableContainer" style="display:none;">
+                    <table class="data-table" id="feishuTable">
+                        <thead><tr><th>国籍/地区</th><th>年龄段</th><th>RISC指数</th><th>风险等级</th><th>详细分项</th><th>提交时间</th></tr></thead>
+                        <tbody id="feishuTableBody"></tbody>
+                    </table>
+                </div>
             </div>
         </div>
 
@@ -503,5 +525,147 @@
             if(el) el.innerHTML = '<div style="text-align:center;">' + pieData.join('') + '</div><div style="text-align:center;margin-top:10px;font-size:13px;color:#888;">共 ' + total + ' 人参与评估</div>';
         };
 </script>
+
+        // ===== 飞书直写：将本地未同步记录推送到飞书（浏览器CORS，无需proxy） =====
+        async function getFeishuFields() {
+            var r = await feishuFetch('bitable/v1/apps/I5R5bCZHRaS9eHsAmcnc6nkKnlb/tables/tblXOAvR3G015i4y/fields', 'GET');
+            if (r.code !== 0) throw new Error('getFields: code=' + r.code + ' ' + r.msg);
+            var m = {}; r.data.items.forEach(function(f){ m[f.field_name] = f.field_id; }); return m;
+        }
+        async function writeToFeishu(record) {
+            var flds = await getFeishuFields();
+            var fb = { fields: {} };
+            if (record.nationality) fb.fields['您的国籍/地区（单选）是？ 2'] = record.nationality;
+            if (record.age) fb.fields['年龄段'] = record.age;
+            if (record.score != null) fb.fields['RISC指数'] = Math.round(record.score * 10) / 10;
+            if (record.riskLevel) fb.fields['风险等级'] = record.riskLevel;
+            var bd = record.breakdown || {};
+            fb.fields['详细分项'] = typeof bd === 'string' ? bd : JSON.stringify(bd);
+            var ts = record.timestamp || record.submittedAt || new Date().toISOString();
+            var d = new Date(ts);
+            fb.fields['提交时间'] = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+            var r2 = await feishuFetch('bitable/v1/apps/I5R5bCZHRaS9eHsAmcnc6nkKnlb/tables/tblXOAvR3G015i4y/records', 'POST', fb);
+            if (r2.code !== 0) throw new Error('write: code=' + r2.code + ' ' + r2.msg);
+            return r2.data.record.record_id;
+        }
+        async function syncLocalToFeishu() {
+            var status = document.getElementById('feishuStatus');
+            if (!status) { alert('请先切换到"飞书同步"标签页'); return; }
+            var local = JSON.parse(localStorage.getItem('risc_assessments') || '[]');
+            var pending = local.filter(function(r){ return !r._syncedToFeishu; });
+            if (pending.length === 0) {
+                status.textContent = '✅ 本地 ' + local.length + ' 条记录已全部同步到飞书';
+                return;
+            }
+            status.textContent = '🔄 正在将 ' + pending.length + ' 条本地记录同步到飞书...';
+            var ok = 0, fail = 0;
+            for (var i = 0; i < pending.length; i++) {
+                var rec = pending[i];
+                try {
+                    var id = await writeToFeishu(rec);
+                    rec._syncedToFeishu = true;
+                    rec._syncedAt = new Date().toISOString();
+                    rec._feishuRecordId = id;
+                    localStorage.setItem('risc_assessments', JSON.stringify(local));
+                    ok++;
+                    status.textContent = '🔄 同步中 (' + ok + '/' + pending.length + ')...';
+                } catch(e) { fail++; status.textContent = '❌ 写入失败: ' + e.message; break; }
+            }
+            status.textContent = (fail === 0 ? '✅' : '⚠️') + ' 完成：成功 ' + ok + ' 条' + (fail > 0 ? '，失败 ' + fail + ' 条' : '');
+            refreshAllStats(); renderTable();
+        }
+
+        // ===== 导出备份（供 Cron 自动同步使用） =====
+        function exportBackupForCron() {
+            var data = JSON.parse(localStorage.getItem('risc_assessments') || '[]');
+            var exp = data.map(function(d) {
+                return { nationality: d.nationality||'', age: d.age||'', score: d.score||0,
+                    riskLevel: d.riskLevel||'unknown',
+                    breakdown: typeof d.breakdown==='string'?d.breakdown:JSON.stringify(d.breakdown||{}),
+                    timestamp: d.timestamp||d.submittedAt||new Date().toISOString(),
+                    _syncedToFeishu: !!d._syncedToFeishu,
+                    _syncedAt: d._syncedAt||null, _feishuRecordId: d._feishuRecordId||null };
+            });
+            var blob = new Blob([JSON.stringify(exp, null, 2)], {type:'application/json'});
+            var a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+            a.download = 'risc_localBackup.json'; a.click();
+            alert('已导出 ' + exp.length + ' 条到 risc_localBackup.json
+
+请保存到：
+C:\Users\31788\qclaw\workspace\risc-sync\localBackup.json
+
+（覆盖同名文件后，Cron 每5分钟自动推送到飞书）');
+        }
+
+
+        // ===== 飞书同步功能（浏览器直连，无需proxy） =====
+        var _ftoken = null;
+        var _ftokenExpire = 0;
+
+        async function feishuFetch(path, method, body) {
+            if (!_ftoken || Date.now() > _ftokenExpire - 60000) {
+                var r = await fetch('https://open.feishu.cn/open-apis/auth/v3/tenant_access_token/internal', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ app_id: 'cli_a949d864a575dbd7', app_secret: '9tK5rDG6NX5snIb1dUCAgbbEsCqKJdBm' })
+                });
+                var d = await r.json();
+                _ftoken = d.tenant_access_token;
+                _ftokenExpire = Date.now() + (d.expire || 7200) * 1000;
+            }
+            var opts = { method: method || 'GET', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + _ftoken } };
+            if (body) opts.body = JSON.stringify(body);
+            var res = await fetch('https://open.feishu.cn/open-apis/' + path, opts);
+            return await res.json();
+        }
+
+        async function syncFromFeishu() {
+            var status = document.getElementById('feishuStatus');
+            var container = document.getElementById('feishuTableContainer');
+            var tbody = document.getElementById('feishuTableBody');
+            if (!status) { alert('请先切换到"飞书同步"标签页'); return; }
+            status.textContent = '🔄 正在连接飞书...';
+            try {
+                var r = await feishuFetch('bitable/v1/apps/I5R5bCZHRaS9eHsAmcnc6nkKnlb/tables/tblXOAvR3G015i4y/records?page_size=100', 'GET');
+                if (r.code !== 0) throw new Error('读取失败: code=' + r.code + ' ' + r.msg);
+                var records = r.data.items || [];
+                status.textContent = '✅ 飞书连接成功，共 ' + records.length + ' 条记录（' + new Date().toLocaleTimeString('zh-CN') + '）';
+                container.style.display = 'block';
+                tbody.innerHTML = '';
+                records.forEach(function(rec) {
+                    var f = rec.fields;
+                    var time = f['提交时间'] || '';
+                    if (typeof time === 'string' && time.includes('T')) time = time.slice(0, 10);
+                    tbody.innerHTML += '<tr><td>' + escHtml(f['您的国籍/地区（单选）是？ 2'] || '-') + '</td>' +
+                        '<td>' + escHtml(f['年龄段'] || '-') + '</td>' +
+                        '<td><b>' + (f['RISC指数'] != null ? f['RISC指数'] : '-') + '</b></td>' +
+                        '<td style="color:' + (f['风险等级'] === 'low' ? '#4caf50' : f['风险等级'] === 'medium' ? '#ff9800' : '#f44336') + '">' + escHtml(f['风险等级'] || '-') + '</td>' +
+                        '<td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + escHtml((f['详细分项'] || '-').toString().slice(0, 80)) + '</td>' +
+                        '<td>' + escHtml(time) + '</td></tr>';
+                });
+                // 合并到本地
+                var local = JSON.parse(localStorage.getItem('risc_assessments') || '[]');
+                records.forEach(function(rec) {
+                    var f = rec.fields;
+                    var item = { nationality: f['您的国籍/地区（单选）是？ 2'] || '', age: f['年龄段'] || '', score: f['RISC指数'] || 0, riskLevel: f['风险等级'] || 'unknown', breakdown: f['详细分项'] || {}, timestamp: f['提交时间'] || new Date().toISOString(), _feishuId: rec.record_id };
+                    if (!local.some(function(l){ return l._feishuId === rec.record_id; })) local.push(item);
+                });
+                localStorage.setItem('risc_assessments', JSON.stringify(local));
+                refreshAllStats(); renderTable();
+            } catch(e) {
+                status.textContent = '❌ 同步失败: ' + e.message;
+            }
+        }
+
+        function escHtml(s) {
+            if (s == null) return '';
+            return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+        }
+
+        async function syncAndExport() {
+            await syncFromFeishu();
+            setTimeout(function() { exportData(); }, 600);
+        }
+
 </body>
 </html>
