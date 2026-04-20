@@ -1130,7 +1130,7 @@
         const FEISHU_APP_ID = 'cli_a949d864a575dbd7';
         const FEISHU_APP_SECRET = '9tK5rDG6NX5snIb1dUCAgbbEsCqKJdBm';
         const FEISHU_APP_TOKEN = 'I5R5bCZHRaS9eHsAmcnc6nkKnlb';
-        const FEISHU_TABLE_ID = 'tblXOAvR3G015i4y';
+        const FEISHU_TABLE_ID = 'tblLLJORpieqlNNq';
 
         // 获取飞书 token
         function getFeishuToken(callback) {
@@ -1147,11 +1147,11 @@
         // 获取年龄标签（匹配飞书选项）
         function getAgeGroupLabel(score) {
             const map = {
-                0: '14岁以下', 2: '15-19岁', 4: '20-24岁', 6: '25-29岁', 8: '30-34岁',
-                10: '35-39岁', 12: '40-44岁', 14: '45-49岁', 16: '50-54岁', 18: '55-59岁',
-                20: '60-64岁', 22: '65-69岁', 24: '70-74岁', 26: '75-79岁', 30: '81岁以上'
+                0: '14岁以下', 2: '15-19', 4: '20-24', 6: '25-29', 8: '30-34',
+                10: '35-39', 12: '40-44', 14: '45-49', 16: '50-54', 18: '55-59',
+                20: '60-64', 22: '65-69', 24: '70-74', 26: '75-79', 30: '81岁以上'
             };
-            return map[score] || '20-24岁';
+            return map[score] || '20-24';
         }
 
         // 获取风险等级（5级）
