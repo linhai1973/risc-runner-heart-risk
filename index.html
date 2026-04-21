@@ -198,7 +198,7 @@
             <h1>🏃 跑者心脏风险评估（测试版1.0）<span class="en">Runner Heart Risk Assessment (Test Version 1.0)</span></h1>
             <p>RISC - Runner's Integrated Safety & Care</p>
             <p style="font-size: 12px; margin-top: 5px;">创建者：林深似海<br>Creator: Linshensihai<br>Email: 317884269@qq.com</p>
-            <p style="font-size: 11px; margin-top: 8px; opacity: 0.85;">如访问缓慢，请使用<a href="#" id="backupLink" style="color: #fff; text-decoration: underline;">备用站点</a></p>
+            <p style="font-size: 11px; margin-top: 8px; opacity: 0.85;">如访问缓慢，请使用<a href="#" id="backupLink" style="color: #fff; text-decoration: underline;">备用站点</a> | <a href="https://linhaiforest.gitee.io/risc-heart-risk/" style="color: #fff; text-decoration: underline;">Gitee镜像</a></p>
             <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width: 0%"></div></div>
         </div>
         <div class="content">
@@ -617,22 +617,29 @@
             const backupLink = document.getElementById('backupLink');
             const currentHost = window.location.hostname;
             
-            // GitHub和Gitee镜像地址
+            // 多个镜像地址（按优先级排序）
             const mirrors = {
                 'github': 'https://linhai1973.github.io/risc-runner-heart-risk/',
+                'githubProxy': 'https://mirror.ghproxy.com/https://linhai1973.github.io/risc-runner-heart-risk/',
                 'gitee': 'https://linhaiforest.gitee.io/risc-heart-risk/'
             };
             
             // 根据当前域名设置备用链接
             if (currentHost.includes('github.io')) {
+                // 在GitHub上，优先使用代理，其次Gitee
+                backupLink.href = mirrors.githubProxy;
+                backupLink.title = '切换到GitHub代理镜像（国内加速）';
+            } else if (currentHost.includes('ghproxy.com') || currentHost.includes('mirror.ghproxy.com')) {
+                // 在代理上，切换到Gitee
                 backupLink.href = mirrors.gitee;
-                backupLink.title = '切换到Gitee镜像（国内访问更快）';
+                backupLink.title = '切换到Gitee镜像';
             } else if (currentHost.includes('gitee.io')) {
-                backupLink.href = mirrors.github;
-                backupLink.title = '切换到GitHub镜像';
+                // 在Gitee上，切换到GitHub代理
+                backupLink.href = mirrors.githubProxy;
+                backupLink.title = '切换到GitHub代理镜像';
             } else {
-                // 本地或其他环境，默认跳转Gitee
-                backupLink.href = mirrors.gitee;
+                // 本地或其他环境，默认GitHub代理
+                backupLink.href = mirrors.githubProxy;
             }
         })();
         
