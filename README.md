@@ -8,7 +8,7 @@ Runner's Integrated Safety & Care - 跑者心脏风险评估系统
 
 ## 功能特点
 
-- 自适应问卷（11道题，动态跳转）
+- 自适应问卷（13道题，动态跳转）
 - RISC指数计算（0-100分）
 - 风险百分位显示
 - 中医经络急救知识评估
@@ -19,10 +19,12 @@ Runner's Integrated Safety & Care - 跑者心脏风险评估系统
 
 ## 访问地址
 
-- 评估页面：https://linhai1973.github.io/risc-runner-heart-risk/
-- 管理后台：https://linhai1973.github.io/risc-runner-heart-risk/admin.html
-- 备用站点（Gitee）：https://linhaiforest.gitee.io/risc-heart-risk/（待开启）
-- 飞书表格：https://my.feishu.cn/base/I5R5bCZHRaS9eHsAmcnc6nkKnlb
+| 站点 | 地址 | 说明 |
+|------|------|------|
+| GitHub原版 | https://linhai1973.github.io/risc-runner-heart-risk/ | 原始站点 |
+| GitHub代理 | https://mirror.ghproxy.com/https://linhai1973.github.io/risc-runner-heart-risk/ | 国内加速 |
+| Gitee镜像 | https://linhaiforest.gitee.io/risc-heart-risk/ | 国内站点 |
+| 飞书表格 | https://my.feishu.cn/base/I5R5bCZHRaS9eHsAmcnc6nkKnlb | 数据同步 |
 
 ## 创建者
 
