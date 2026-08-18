@@ -47,7 +47,7 @@
         <h1>🏃 RISC 管理后台 <span style="font-size: 12px; opacity: 0.7;">v3.3</span></h1>
         <div class="header-links">
             <a href="index.html">评估页面</a>
-            <button class="logout-btn" onclick="logout()">退出登录/button>
+            <button class="logout-btn" onclick="logout()">退出登录</button>
         </div>
     </div>
 
@@ -65,7 +65,7 @@
         <div class="tab-content active" id="tab-overview">
             <div class="stats-grid">
                 <div class="stat-card">
-                    <h3>总参与人数/h3>
+                    <h3>总参与人数</h3>
                     <div class="stat-value" id="totalCount">0</div>
                 </div>
                 <div class="stat-card">
@@ -73,7 +73,7 @@
                     <div class="stat-value" id="avgScore">0</div>
                 </div>
                 <div class="stat-card">
-                    <h3>高风险占比/h3>
+                    <h3>高风险占比</h3>
                     <div class="stat-value" id="highRiskPercent">0%</div>
                 </div>
             </div>
@@ -100,9 +100,9 @@
             <div class="filter-bar">
                 <select id="filterRisk" onchange="renderTable()">
                     <option value="">全部风险等级</option>
-                    <option value="low">低风险/option>
-                    <option value="medium">中风险/option>
-                    <option value="high">高风险/option>
+                    <option value="low">低风险</option>
+                    <option value="medium">中风险</option>
+                    <option value="high">高风险</option>
                 </select>
                 <button class="export-btn" onclick="addTestData()">添加测试数据</button>
                 <button class="clear-btn" onclick="clearAllData()">🗑清空数据</button>
@@ -125,7 +125,7 @@
         <div class="tab-content" id="tab-export">
             <div class="chart-card">
                 <h2>导出数据</h2>
-                <p style="margin-bottom: 15px; color: #666;">选择格式并导出所有评估数据/p>
+                <p style="margin-bottom: 15px; color: #666;">选择格式并导出所有评估数据</p>
                 <select id="exportFormat" style="padding: 10px; border: 1px solid #ddd; border-radius: 6px; margin-right: 10px;">
                     <option value="xlsx">Excel (.xlsx)</option>
                     <option value="csv">CSV</option>
@@ -139,14 +139,14 @@
         <div class="tab-content" id="tab-feishu">
             <div class="chart-card">
                 <h2>☁️ 飞书云端数据同步</h2>
-                <p style="margin-bottom:15px;color:#666;">数据已同步至飞书多维表格，可实时查看和导出。API凭证已内置，无需额外配置。/p>
+                <p style="margin-bottom:15px;color:#666;">数据已同步至飞书多维表格，可实时查看和导出。API凭证已内置，无需额外配置。</p>
                 <div style="display:flex;gap:10px;margin-bottom:15px;">
-                    <button class="export-btn" onclick="syncFromFeishu()" style="background:#0066CC;">🔄 从飞书读取/button>
-                    <button class="export-btn" onclick="syncLocalToFeishu()" style="background:#f59e0b;">⬆️ 本地→飞书/button>
+                    <button class="export-btn" onclick="syncFromFeishu()" style="background:#0066CC;">🔄 从飞书读取</button>
+                    <button class="export-btn" onclick="syncLocalToFeishu()" style="background:#f59e0b;">⬆️ 本地→飞书</button>
                     <button class="export-btn" onclick="exportBackupForCron()" style="background:#6b7280;">💾 导出备份</button>
                     <button class="export-btn" onclick="syncAndExport()" style="background:#10b981;">📥 同步后导出Excel</button>
                 </div>
-                <div id="feishuStatus" style="margin-bottom:15px;font-size:13px;color:#888;">待同步/div>
+                <div id="feishuStatus" style="margin-bottom:15px;font-size:13px;color:#888;">待同步</div>
                 <div id="feishuTableContainer" style="display:none;">
                     <table class="data-table" id="feishuTable">
                         <thead><tr><th>国籍/地区</th><th>年龄/th><th>RISC指数</th><th>风险等级</th><th>详细分项</th><th>提交时间</th></tr></thead>
@@ -160,8 +160,8 @@
         <div class="tab-content" id="tab-settings">
             <div class="chart-card">
                 <h2>📊 数据管理</h2>
-                <p style="margin-bottom: 15px; color: #666;">评估数据存储在浏览器本地（localStorage）。可导出CSV/JSON 备份/p>
-                <p style="margin-bottom: 10px; color: #888; font-size: 13px;">⚠️ 清除浏览器缓存会导致数据丢失，建议定期导出备份/p>
+                <p style="margin-bottom: 15px; color: #666;">评估数据存储在浏览器本地（localStorage）。可导出CSV/JSON 备份</p>
+                <p style="margin-bottom: 10px; color: #888; font-size: 13px;">⚠️ 清除浏览器缓存会导致数据丢失，建议定期导出备份</p>
                 <div style="margin-top: 15px;">
                     <button class="export-btn" onclick="if(confirm('确定清空所有评估数据？此操作不可恢复！')){ localStorage.removeItem('risc_assessments'); refreshAllStats(); renderTable(); }">🗑清空数据</button>
                 </div>
