@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RISC 管理后台 v3.0</title>
     <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: -apple-system, BlinkMacSystemSystemFont, "Segoe UI", Roboto, sans-serif; background: #f5f7fa; }
@@ -58,6 +59,7 @@
             <button class="tab" onclick="switchTab('records')">📋 数据记录</button>
             <button class="tab" onclick="switchTab('export')">📥 数据导出</button>
             <button class="tab" onclick="switchTab('feishu')" style="background:#0066CC;color:white;">☁️ 飞书同步</button>
+            <button class="tab" onclick="switchTab('share')" style="background:#e91e63;color:white;">🔗 分享推广</button>
             <button class="tab" onclick="switchTab('settings')">⚙️ 系统设置</button>
         </div>
 
@@ -152,6 +154,28 @@
                         <thead><tr><th>国籍/地区</th><th>年龄/th><th>RISC指数</th><th>风险等级</th><th>详细分项</th><th>提交时间</th></tr></thead>
                         <tbody id="feishuTableBody"></tbody>
                     </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 分享推广 -->
+        <div class="tab-content" id="tab-share">
+            <div class="chart-card">
+                <h2>🔗 分享推广</h2>
+                <p style="margin-bottom: 15px; color: #666;">生成评估页面分享链接，方便推广给潜在客户</p>
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">分享链接：</label>
+                    <input type="text" id="adminShareUrl" readonly style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px;">
+                </div>
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">二维码：</label>
+                    <div id="adminQrContainer" style="text-align: center; padding: 20px; background: #f5f5f5; border-radius: 8px;">
+                        <canvas id="adminQrcode" width="200" height="200"></canvas>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button class="export-btn" onclick="copyAdminShareUrl()">📋 复制链接</button>
+                    <button class="export-btn" onclick="downloadQrCode()" style="background:#4caf50;">📥 下载二维码</button>
                 </div>
             </div>
         </div>
@@ -455,6 +479,13 @@
             updateOverview();
             renderTable();
         }
+
+        // 初始化分享Tab
+        window.addEventListener('load', function() {
+            if (document.getElementById('tab-share')) {
+                initShareTab();
+            }
+        });
         
         // 监听 storage 事件，实现跨标签页面数据同步
         window.addEventListener('storage', function(e) {
@@ -660,6 +691,35 @@ C:\Users\31788\qclaw\workspace\risc-sync\localBackup.json
         function escHtml(s) {
             if (s == null) return '';
             return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+        }
+
+        // 分享推广功能
+        function initShareTab() {
+            const url = window.location.origin + '/index.html';
+            document.getElementById('adminShareUrl').value = url;
+
+            if (typeof QRCode !== 'undefined') {
+                new QRCode(document.getElementById('adminQrcode'), {
+                    text: url,
+                    width: 200,
+                    height: 200
+                });
+            }
+        }
+
+        function copyAdminShareUrl() {
+            const urlInput = document.getElementById('adminShareUrl');
+            urlInput.select();
+            document.execCommand('copy');
+            alert('链接已复制到剪贴板！');
+        }
+
+        function downloadQrCode() {
+            const canvas = document.getElementById('adminQrcode');
+            const link = document.createElement('a');
+            link.download = 'RISC分享二维码.png';
+            link.href = canvas.toDataURL();
+            link.click();
         }
 
         async function syncAndExport() {

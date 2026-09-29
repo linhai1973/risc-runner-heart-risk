@@ -608,6 +608,18 @@
                     <button onclick="copyAssessmentReport()" style="background: #2196f3; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-size: 14px; cursor: pointer; width: 100%; margin-bottom: 10px;">📋 复制评估报告 <span class="en" style="font-size: 12px;">Copy Report</span></button>
                     <button onclick="downloadAssessmentPDF()" style="background: #4caf50; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-size: 14px; cursor: pointer; width: 100%;">📥 下载PDF报告 <span class="en" style="font-size: 12px;">Download PDF</span></button>
                 </div>
+                <div class="share-section" id="shareSection" style="background: #f3e5f5; border: 1px solid #9c27b0; border-radius: 10px; padding: 15px; margin-bottom: 15px; display: none;">
+                    <h4 style="color: #7b1fa2; margin-bottom: 10px; font-size: 14px;">🔗 分享评估链接 <span class="en" style="font-size: 12px; color: #9c27b0;">Share Assessment Link</span></h4>
+                    <p style="font-size: 13px; color: #555; margin-bottom: 10px;">复制以下链接分享给好友，他们可直接打开本页进行评估。<span class="en" style="font-size: 11px; color: #777;">Share this link with friends so they can take the assessment directly.</span></p>
+                    <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                        <input type="text" id="shareUrl" readonly style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 12px;">
+                        <button onclick="copyShareUrl()" style="background: #9c27b0; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-size: 13px;">复制</button>
+                    </div>
+                    <div id="qrcodeContainer" style="text-align: center; margin-top: 10px;">
+                        <canvas id="qrcode" width="150" height="150"></canvas>
+                        <p style="font-size: 11px; color: #888; margin-top: 5px;">扫描二维码直接访问</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -1125,6 +1137,7 @@
             generateRecommendations(totalScore, answers);
             saveAssessmentData(totalScore, percentile, scoreBreakdown);
             syncToFeishu(totalScore, scoreBreakdown);
+            triggerShareOnResult();
         }
         
         // 覆盖原有的showResult
@@ -1231,6 +1244,35 @@
             });
         }
 
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    <script>
+        // 分享功能
+        function triggerShareOnResult() {
+            const shareSection = document.getElementById('shareSection');
+            if (!shareSection) return;
+            
+            const url = window.location.href.split('?')[0];
+            document.getElementById('shareUrl').value = url;
+            shareSection.style.display = 'block';
+            
+            // 生成二维码
+            const qrcodeContainer = document.getElementById('qrcodeContainer');
+            if (qrcodeContainer && typeof QRCode !== 'undefined') {
+                new QRCode(document.getElementById('qrcode'), {
+                    text: url,
+                    width: 150,
+                    height: 150
+                });
+            }
+        }
+        
+        function copyShareUrl() {
+            const urlInput = document.getElementById('shareUrl');
+            urlInput.select();
+            document.execCommand('copy');
+            alert('链接已复制！可以分享给好友了。');
+        }
     </script>
 </body>
 </html>
